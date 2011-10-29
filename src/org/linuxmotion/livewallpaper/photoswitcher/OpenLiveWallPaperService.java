@@ -1,5 +1,8 @@
 package org.linuxmotion.livewallpaper.photoswitcher;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import org.linuxmotion.livewallpaper.utils.Constants;
 
 import android.app.Activity;
@@ -55,7 +58,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	    private float mTouchX = -1;
 	    private float mTouchY = -1;
 	    private long  mStartTime;
-	    private long  mRunTime = 10000;
+	    private long  mRunTime = 1000;
 	    private float mCenterX;
 	    private float mCenterY;
 	    private float mOffset;
@@ -155,7 +158,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            // Reschedule the next redraw
 	            mHandler.removeCallbacks(mTimeToSwitch);
 	            if (mVisible) {
-	               mHandler.postDelayed(mTimeToSwitch, mRunTime/25);
+	               mHandler.postDelayed(mTimeToSwitch, mRunTime);
 	            }
 
 
@@ -170,9 +173,26 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				
 				if(!filePath.equals("")){
 					c.drawColor(Color.BLACK);
-					Bitmap b = BitmapFactory.decodeFile(filePath);
+					
+					Bitmap b = null;
+					try {
+						BitmapFactory.Options o = new BitmapFactory.Options();
+				        o.inJustDecodeBounds = false;
+				        o.inSampleSize = 2;
+						b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,o);
+						if(b == null)Log.d(this.getClass().getSimpleName(), "Decoded bitmap");
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						b = BitmapFactory.decodeFile(filePath);
+					}
 					Matrix transform = new Matrix();
-				    transform.setTranslate(mCenterX, mCenterY);
+				    
+					transform.setTranslate(mCenterX, mCenterY);
+				    transform.preRotate(20.0f, b.getHeight()/2, b.getWidth()/2);
+				    c.drawBitmap(b, transform, null);
+				    
+				    transform.setTranslate((b.getWidth()/2), (b.getWidth()/2));
 				    transform.preRotate(20.0f, b.getHeight()/2, b.getWidth()/2);
 				    c.drawBitmap(b, transform, null);
 				    
@@ -205,7 +225,23 @@ public class OpenLiveWallPaperService extends WallpaperService {
 					
 				}else{
 					// get the picture directroy
-					Bitmap b = BitmapFactory.decodeFile(filePath);
+				
+
+			        Bitmap b = null;
+			        
+					try {	
+						BitmapFactory.Options o = new BitmapFactory.Options();
+			        o.inJustDecodeBounds = false;
+			        o.inSampleSize = 2;
+						b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,o);
+						if(b == null)Log.d(this.getClass().getSimpleName(), "Decoded bitmap");
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						b = BitmapFactory.decodeFile(filePath);
+					}
+
+					//
 					// Determine picture to grab
 					// place picture into a bitmap
 					Matrix m = new Matrix();
