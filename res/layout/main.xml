@@ -2,11 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical" >
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello" />
+        android:text="@string/selecting_pictures" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select"
+        android:onClick="startSelection" />
 
 </LinearLayout>

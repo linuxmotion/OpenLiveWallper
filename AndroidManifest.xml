@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="8" />
     <uses-feature android:name="android.software.live_wallpaper" />
 
     <application
@@ -14,7 +14,7 @@
         <service
             android:label="OpenLiveWallpaper"
             android:name=".OpenLiveWallPaperService"
-            android:permission="android.permission.BIND_WALLPAPER">
+            android:permission="android.permission.BIND_WALLPAPER" >
             	<intent-filter>
                 	<action android:name="android.service.wallpaper.WallpaperService" />
             	</intent-filter>
@@ -31,6 +31,11 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:label="openLiveWallpaper"
+            android:name="org.linuxmotion.filemanager.openFileManagerActivity">
+         </activity>
+         
     </application>
 
 </manifest>

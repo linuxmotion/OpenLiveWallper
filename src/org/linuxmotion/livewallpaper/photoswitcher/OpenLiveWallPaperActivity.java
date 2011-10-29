@@ -1,9 +1,23 @@
 package org.linuxmotion.livewallpaper.photoswitcher;
 
+import org.linuxmotion.livewallpaper.utils.Constants;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
 
 public class OpenLiveWallPaperActivity extends Activity {
+
+	private static final int REQ_CODE_PICK_IMAGE = 1;
+	private SharedPreferences mSharedPreferences;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -11,6 +25,49 @@ public class OpenLiveWallPaperActivity extends Activity {
 		
 		setContentView(R.layout.main);
 		
+	}
+
+	
+	public void startSelection(View v){
+		
+		Intent i = new Intent(Intent.ACTION_PICK,
+	               android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		
+		startActivityForResult(i, REQ_CODE_PICK_IMAGE); 
+	
+		
+	}
+	
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) { 
+	    super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
+
+	    switch(requestCode) { 
+	    case REQ_CODE_PICK_IMAGE:
+	        if(resultCode == RESULT_OK){  
+	            Uri selectedImage = imageReturnedIntent.getData();
+	            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+	            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+	            cursor.moveToFirst();
+
+	            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+	            String filePath = cursor.getString(columnIndex);
+	            cursor.close();
+
+	            mSharedPreferences = this.getSharedPreferences(Constants.SHARED_PREFS, 0);
+	             // Save the filepath to a shared preference
+
+				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
+	            SharedPreferences.Editor editor = mSharedPreferences.edit();
+	            editor.putString(Constants.SINGLE_FILE_PATH, filePath);
+	            editor.commit();
+	           
+	        }
+	    }
+	    
+	    
+	    
 	}
 
 }

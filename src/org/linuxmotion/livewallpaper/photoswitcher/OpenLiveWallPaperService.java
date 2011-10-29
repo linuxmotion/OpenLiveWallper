@@ -1,24 +1,33 @@
 package org.linuxmotion.livewallpaper.photoswitcher;
 
+import org.linuxmotion.livewallpaper.utils.Constants;
+
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class OpenLiveWallPaperService extends WallpaperService {
 
 
 	private final Handler mHandler = new Handler();
-
+	private SharedPreferences mSharedPrefs;
 	
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mSharedPrefs = getSharedPreferences(Constants.SHARED_PREFS, 0);
 	}
 
 
@@ -39,12 +48,14 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	class PhotSwitcherEngine extends Engine {
 
 
-        private final Paint mPaint = new Paint();
+        private boolean mAnimating = false;
+
+		private final Paint mPaint = new Paint();
 
 	    private float mTouchX = -1;
 	    private float mTouchY = -1;
 	    private long  mStartTime;
-	    private long  mRunTime;
+	    private long  mRunTime = 10000;
 	    private float mCenterX;
 	    private float mCenterY;
 	    private float mOffset;
@@ -63,7 +74,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
             paint.setStyle(Paint.Style.STROKE);
 
 
-            mStartTime = SystemClock.elapsedRealtime();
+            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
 
             // By default we don't get touch events, so enable them.
             // We dont want this just yet
@@ -72,8 +83,9 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
         private final Runnable mTimeToSwitch = new Runnable() {
             public void run() {
-                displayPicture();
+               displayPicture();
             }
+
         };
 
         @Override
@@ -97,6 +109,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	       @Override
 	        public void onVisibilityChanged(boolean visible) {
 	            mVisible = visible;
+	            mAnimating = false;
 	            if (visible) {
 	                displayPicture();
 	            } else {
@@ -108,6 +121,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	       @Override
 	        public void onSurfaceCreated(SurfaceHolder holder) {
 	            super.onSurfaceCreated(holder);
+	            mAnimating = false;
 	        }
 
 	        @Override
@@ -115,9 +129,10 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            super.onSurfaceDestroyed(holder);
 	            mVisible = false;
 	            mHandler.removeCallbacks(mTimeToSwitch);
+	            mAnimating = false;
 	        }
 
-
+			
 	        protected void displayPicture() {
 
 
@@ -129,7 +144,9 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	                c = holder.lockCanvas();
 	                if (c != null) {
 	                    // draw something
-	                	drawPicture(c);
+	                	Log.d(this.getClass().getSimpleName(), "The animation is: " + Boolean.toString(mAnimating));
+	                	if(!mAnimating)drawPicture(c);
+	                	else drawAnimatedPicture(c);
 	                }
 	            } finally {
 	                if (c != null) holder.unlockCanvasAndPost(c);
@@ -138,26 +155,75 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            // Reschedule the next redraw
 	            mHandler.removeCallbacks(mTimeToSwitch);
 	            if (mVisible) {
-	                mHandler.postDelayed(mTimeToSwitch, 1000 / 25);
+	               mHandler.postDelayed(mTimeToSwitch, mRunTime/25);
 	            }
 
 
 	        }
 
 
+			private void drawAnimatedPicture(Canvas c) {
+				Log.d(this.getClass().getSimpleName(), "drawing animated picure");
+				
+				String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
+				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
+				
+				if(!filePath.equals("")){
+					c.drawColor(Color.BLACK);
+					Bitmap b = BitmapFactory.decodeFile(filePath);
+					Matrix transform = new Matrix();
+				    transform.setTranslate(mCenterX, mCenterY);
+				    transform.preRotate(20.0f, b.getHeight()/2, b.getWidth()/2);
+				    c.drawBitmap(b, transform, null);
+				    
+				}
+				
+				if(mStartTime <= SystemClock.elapsedRealtime()){
+					Log.d(this.getClass().getSimpleName(), "Stoping animation");
+					mAnimating = false;
+		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
+				}
+
+			}
+
+
 			private void drawPicture(Canvas c) {
 				// TODO Auto-generated method stub
+				mAnimating = false;
+				Log.d(this.getClass().getSimpleName(), "drawing the picture");
+				String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
+				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
 				
-				c.drawCircle(mCenterX, mTouchY, mRunTime, mPaint);
-				// get the picture directroy
+				if(filePath.equals("")){
+					
+					// grab the default bitmap
+					mPaint.setColor(Color.RED);
+					// draw the bitmap picture into a canvas
+					c.drawCircle(mCenterX, mTouchY, mRunTime, mPaint);
+					//
+					mPaint.setColor(Color.BLACK);
+					
+				}else{
+					// get the picture directroy
+					Bitmap b = BitmapFactory.decodeFile(filePath);
+					// Determine picture to grab
+					// place picture into a bitmap
+					Matrix m = new Matrix();
+					// draw the bitmap picture into a canvas
+					c.drawColor(Color.BLACK);
+					c.drawBitmap(b, m, mPaint);
+
+		           
+					//
+					
+					
+				}
 				
-				// Determine picture to grab
-				
-				// place picture into a bitmap
-				
-				// draw the bitmap picture into a canvas
-				
-				//
+				if(mStartTime <= SystemClock.elapsedRealtime()){
+					Log.d(this.getClass().getSimpleName(), "Starting animation catch");
+					mAnimating = true;
+		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
+				}
 				
 				
 			}
