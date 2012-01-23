@@ -4,6 +4,10 @@
     <string name="hello">Hello World, OpenLiveWallPaperActivity!</string>
     <string name="app_name">OpenLiveWallPaper</string>
     <string name="select">Select</string>
-    <string name="selecting_pictures">Please press the button to begin selecting the pictures you wish to use.</string>
+    <string name="selecting_pictures">Please press the button to begin selecting the pictures you wish to use. 
+        These are the current pictures on the device</string>
+    
+    <string name="selecting_default_pictures">Please press the button to begin selecting the pictures you wish to use. These pictures
+        are included free of copyright restriction</string>
 
 </resources>

@@ -6,15 +6,29 @@
     android:orientation="vertical" >
 
     <TextView
-        android:layout_width="fill_parent"
+        android:id="@+id/phoneGalleryTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/selecting_pictures" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/phoneGalleryButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/select"
         android:onClick="startSelection" />
+    
+        <TextView
+        android:id="@+id/defaultGalleryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/selecting_default_pictures" />
+        
+     <Button
+        android:id="@+id/defaultGalleryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select"
+        android:onClick="startDefaultSelection" />
 
 </LinearLayout>
