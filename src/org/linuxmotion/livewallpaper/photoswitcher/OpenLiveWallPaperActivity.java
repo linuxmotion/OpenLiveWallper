@@ -1,18 +1,20 @@
 package org.linuxmotion.livewallpaper.photoswitcher;
 
 import org.linuxmotion.livewallpaper.utils.Constants;
+import org.linuxmotion.livewallpaper.utils.LicenseChecker;
+import org.linuxmotion.livewallpaper.photoswitcher.GalleryViewer;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class OpenLiveWallPaperActivity extends Activity {
 
@@ -25,15 +27,33 @@ public class OpenLiveWallPaperActivity extends Activity {
 		
 		setContentView(R.layout.main);
 		
+		Button phoneGalleryButtonSelect = (Button) this.findViewById(R.id.phoneGalleryButton);
+		TextView phoneGalleryTextSelect = (TextView) this.findViewById(R.id.phoneGalleryTextView);
+		
+		if(LicenseChecker.checkLicense() == false){ // Hide the views if the license is not available
+			
+			phoneGalleryTextSelect.setVisibility(View.GONE);
+			phoneGalleryButtonSelect.setVisibility(View.GONE);
+		}
+		
 	}
 
 	
 	public void startSelection(View v){
-		
 		Intent i = new Intent(Intent.ACTION_PICK,
 	               android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		
+		
+		
 		startActivityForResult(i, REQ_CODE_PICK_IMAGE); 
+	
+		
+	}
+	public void startDefaultSelection(View v){
+		
+		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.GalleryViewer.class);
+		
+		startActivity(i); 
 	
 		
 	}

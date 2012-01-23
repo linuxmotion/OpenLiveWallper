@@ -4,16 +4,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.linuxmotion.livewallpaper.utils.Constants;
+import org.linuxmotion.livewallpaper.utils.LicenseChecker;
 
-import android.app.Activity;
+
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
@@ -25,12 +27,17 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
 	private final Handler mHandler = new Handler();
 	private SharedPreferences mSharedPrefs;
-	
+	private Resources mResources;
+	private Bitmap mBackground;
+	private static boolean mNewBackground = true;
+	private static int mDefaultSelection;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mSharedPrefs = getSharedPreferences(Constants.SHARED_PREFS, 0);
+		mResources = getResources();
+		mDefaultSelection = mSharedPrefs.getInt(Constants.DEFAULT_IMAGE_SELECTION, 0);
 	}
 
 
@@ -148,8 +155,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	                if (c != null) {
 	                    // draw something
 	                	Log.d(this.getClass().getSimpleName(), "The animation is: " + Boolean.toString(mAnimating));
-	                	if(!mAnimating)drawPicture(c);
-	                	else drawAnimatedPicture(c);
+	                	drawAnimatedPicture(c);
 	                }
 	            } finally {
 	                if (c != null) holder.unlockCanvasAndPost(c);
@@ -171,34 +177,41 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
 				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
 				
-				if(!filePath.equals("")){
+			
 					c.drawColor(Color.BLACK);
 					
-					Bitmap b = null;
-					try {
-						BitmapFactory.Options o = new BitmapFactory.Options();
-				        o.inJustDecodeBounds = false;
-				        o.inSampleSize = 2;
-						b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,o);
-						if(b == null)Log.d(this.getClass().getSimpleName(), "Decoded bitmap");
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						b = BitmapFactory.decodeFile(filePath);
-					}
+					
+				
+					BitmapFactory.Options o = new BitmapFactory.Options();
+				    o.inJustDecodeBounds = false;
+				    o.inSampleSize = 2;
+				    
+				    mBackground = retreiveBitmap(o);
+						
+				    if(mBackground == null)Log.d(this.getClass().getSimpleName(), "Decoded cannot be decoded bitmap");
 					Matrix transform = new Matrix();
+					
+					
+					transform.setTranslate(0,0);
+					//transform.setTranslate(mCenterX, mCenterY);
+					
+					int width = mBackground.getWidth();
+					int height = mBackground.getHeight();
+					
+					c.drawBitmap(mBackground, transform, null);
+					
+					/*
+				    transform.preRotate(20.0f, height/2, width/2);
+				    c.drawBitmap(mBackground, transform, null);
 				    
-					transform.setTranslate(mCenterX, mCenterY);
-				    transform.preRotate(20.0f, b.getHeight()/2, b.getWidth()/2);
-				    c.drawBitmap(b, transform, null);
+				    transform.setTranslate((width/2), (width/2));
+				    transform.preRotate(20.0f, height/2, width/2);
 				    
-				    transform.setTranslate((b.getWidth()/2), (b.getWidth()/2));
-				    transform.preRotate(20.0f, b.getHeight()/2, b.getWidth()/2);
-				    c.drawBitmap(b, transform, null);
-				    
-				}
+				    c.drawBitmap(mBackground, transform, null);
+					 */
 				
 				if(mStartTime <= SystemClock.elapsedRealtime()){
+					mNewBackground = true;
 					Log.d(this.getClass().getSimpleName(), "Stoping animation");
 					mAnimating = false;
 		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
@@ -207,60 +220,46 @@ public class OpenLiveWallPaperService extends WallpaperService {
 			}
 
 
-			private void drawPicture(Canvas c) {
-				// TODO Auto-generated method stub
-				mAnimating = false;
-				Log.d(this.getClass().getSimpleName(), "drawing the picture");
-				String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
-				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
+			private Bitmap retreiveBitmap(BitmapFactory.Options options){
 				
-				if(filePath.equals("")){
+				if(mBackground == null || mNewBackground){
+					String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
+					Log.d(this.getClass().getSimpleName(), "Setting a new picture");
+					Bitmap b;
+					mNewBackground = false;
 					
-					// grab the default bitmap
-					mPaint.setColor(Color.RED);
-					// draw the bitmap picture into a canvas
-					c.drawCircle(mCenterX, mTouchY, mRunTime, mPaint);
-					//
-					mPaint.setColor(Color.BLACK);
+					// If the default selection is at the max length return it to the first picture
+					if(mDefaultSelection == (Constants.DefaultPictures.length)){ mDefaultSelection = 0;}
 					
-				}else{
-					// get the picture directroy
-				
-
-			        Bitmap b = null;
-			        
-					try {	
-						BitmapFactory.Options o = new BitmapFactory.Options();
-			        o.inJustDecodeBounds = false;
-			        o.inSampleSize = 2;
-						b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,o);
-						if(b == null)Log.d(this.getClass().getSimpleName(), "Decoded bitmap");
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						b = BitmapFactory.decodeFile(filePath);
+					if(LicenseChecker.checkLicense()){
+						// A license was found
+							
+							
+							try {
+								b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,options);
+							} catch (FileNotFoundException e) {
+								
+								// If the file cannot be found resort to a default bitmap and increment the number
+								return BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
+							}
+							if(b == null){
+								// If the bitmap cannot be decoded resort to a default bitmap and increment the number
+								return BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
+							}
+				        	return b; // Return the decoded bitmap
+				        	
+				        }
+				        else{// If the license cannot be found resort to a default bitmap and increment the number
+				        	
+				        	b = BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
+				        	return b;
+				        }
 					}
-
-					//
-					// Determine picture to grab
-					// place picture into a bitmap
-					Matrix m = new Matrix();
-					// draw the bitmap picture into a canvas
-					c.drawColor(Color.BLACK);
-					c.drawBitmap(b, m, mPaint);
-
-		           
-					//
+				else{ // There is already a bitmap ready. Dont waste resources creating it again
 					
 					
+					return mBackground;
 				}
-				
-				if(mStartTime <= SystemClock.elapsedRealtime()){
-					Log.d(this.getClass().getSimpleName(), "Starting animation catch");
-					mAnimating = true;
-		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
-				}
-				
 				
 			}
 	
