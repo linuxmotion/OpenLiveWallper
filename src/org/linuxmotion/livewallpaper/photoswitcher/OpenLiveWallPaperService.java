@@ -24,14 +24,17 @@ import android.view.SurfaceHolder;
 
 public class OpenLiveWallPaperService extends WallpaperService {
 
+	private static final String TAG = OpenLiveWallPaperService.class.getSimpleName();
 
 	private final Handler mHandler = new Handler();
 	private SharedPreferences mSharedPrefs;
 	private Resources mResources;
 	private Bitmap mBackground;
+	public float mScalingFactor;
 	private static boolean mNewBackground = true;
 	private static int mDefaultSelection;
-
+	private static final boolean DBG = false; 
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -58,18 +61,19 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	class PhotSwitcherEngine extends Engine {
 
 
-        private boolean mAnimating = false;
-
+     
 		private final Paint mPaint = new Paint();
-
-	    private float mTouchX = -1;
-	    private float mTouchY = -1;
+		private float mOffset;
+		private float mCenterX;
+		private float mCenterY;
 	    private long  mStartTime;
-	    private long  mRunTime = 1000;
-	    private float mCenterX;
-	    private float mCenterY;
-	    private float mOffset;
+	    private long  mRunTime = 10000;
 	    private boolean mVisible;
+	    private static final float mMaxScale = 5;
+	    private static final float mMinScale = 0.25f;
+	    private static final float mScalingFactor = .25f;
+	    private float mScale = 1;
+	    private boolean mGrowAnimation = true;
 
 	    
 	    @Override
@@ -83,6 +87,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStyle(Paint.Style.STROKE);
 
+            
 
             mStartTime = SystemClock.elapsedRealtime() + mRunTime;
 
@@ -111,7 +116,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		@Override
         public void onOffsetsChanged(float xOffset, float yOffset,
                 float xStep, float yStep, int xPixels, int yPixels) {
-            mOffset = xOffset;
+			mOffset = xOffset;
             displayPicture();
         }
 
@@ -119,7 +124,6 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	       @Override
 	        public void onVisibilityChanged(boolean visible) {
 	            mVisible = visible;
-	            mAnimating = false;
 	            if (visible) {
 	                displayPicture();
 	            } else {
@@ -131,7 +135,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	       @Override
 	        public void onSurfaceCreated(SurfaceHolder holder) {
 	            super.onSurfaceCreated(holder);
-	            mAnimating = false;
+	   
 	        }
 
 	        @Override
@@ -139,28 +143,43 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            super.onSurfaceDestroyed(holder);
 	            mVisible = false;
 	            mHandler.removeCallbacks(mTimeToSwitch);
-	            mAnimating = false;
+	           
 	        }
 
 			
 	        protected void displayPicture() {
+	        	Log.d(TAG, "Drawing the animation");
 
 
 	            final SurfaceHolder holder = getSurfaceHolder();
 				
 
 	            Canvas c = null;
-	            try {
-	                c = holder.lockCanvas();
-	                if (c != null) {
-	                    // draw something
-	                	Log.d(this.getClass().getSimpleName(), "The animation is: " + Boolean.toString(mAnimating));
-	                	drawAnimatedPicture(c);
-	                }
-	            } finally {
-	                if (c != null) holder.unlockCanvasAndPost(c);
-	            }
+	            for(int frame = 0; frame < 300; frame++){
+
+	            	try {
+		                c = holder.lockCanvas();
+		                if (c != null) {
+		                    // draw something
+		                	log("Canvas aquired");
+		                	drawAnimatedPicture(c);
+		                }
+		            } finally {
+		                if (c != null){
+		                	log("Canvas posted");
+		                	holder.unlockCanvasAndPost(c);
+		                	c = null;
+		                }
+		            }
+		            
+		         }
+
+	        	Log.d(TAG, "Animation is finished");
 	            
+	    		if(mStartTime <= SystemClock.elapsedRealtime()){
+					mNewBackground = true;
+		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
+				}
 	            // Reschedule the next redraw
 	            mHandler.removeCallbacks(mTimeToSwitch);
 	            if (mVisible) {
@@ -172,15 +191,17 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
 
 			private void drawAnimatedPicture(Canvas c) {
-				Log.d(this.getClass().getSimpleName(), "drawing animated picure");
+				//Log.d(this.getClass().getSimpleName(), "drawing animated picure");
 				
 				String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
-				Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
+				//Log.d(this.getClass().getSimpleName(), "the filepath is: " + filePath);
 				
 			
-					c.drawColor(Color.BLACK);
-					
-					
+				
+				
+				
+					c.drawColor(Color.DKGRAY);
+									
 				
 					BitmapFactory.Options o = new BitmapFactory.Options();
 				    o.inJustDecodeBounds = false;
@@ -188,34 +209,30 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				    
 				    mBackground = retreiveBitmap(o);
 						
-				    if(mBackground == null)Log.d(this.getClass().getSimpleName(), "Decoded cannot be decoded bitmap");
+				    if(mBackground == null)Log.d(this.getClass().getSimpleName(), "Cannot decoded bitmap");
+				
+					
+					if((mScale <= mMaxScale) && mGrowAnimation){
+						
+						mScale += mScalingFactor;
+					    	
+					}
+					else{
+						
+					    mGrowAnimation = false;
+					    mScale -= mScalingFactor;
+					    if(mScale == mMinScale)mGrowAnimation = true;
+					    	
+					}
+					
 					Matrix transform = new Matrix();
-					
-					
 					transform.setTranslate(0,0);
-					//transform.setTranslate(mCenterX, mCenterY);
-					
-					int width = mBackground.getWidth();
-					int height = mBackground.getHeight();
+					transform.postScale(mScale, mScale);
 					
 					c.drawBitmap(mBackground, transform, null);
+
 					
-					/*
-				    transform.preRotate(20.0f, height/2, width/2);
-				    c.drawBitmap(mBackground, transform, null);
-				    
-				    transform.setTranslate((width/2), (width/2));
-				    transform.preRotate(20.0f, height/2, width/2);
-				    
-				    c.drawBitmap(mBackground, transform, null);
-					 */
-				
-				if(mStartTime <= SystemClock.elapsedRealtime()){
-					mNewBackground = true;
-					Log.d(this.getClass().getSimpleName(), "Stoping animation");
-					mAnimating = false;
-		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
-				}
+		
 
 			}
 
@@ -255,7 +272,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				        	return b;
 				        }
 					}
-				else{ // There is already a bitmap ready. Dont waste resources creating it again
+				else{ // There is already a bitmap ready. Don't waste resources creating it again
 					
 					
 					return mBackground;
@@ -263,7 +280,15 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				
 			}
 	
+			private void log(String msg){
+				
+				if(DBG)Log.d(TAG, msg);
+				
+			}
 	}
+	
+	
+	
 	    
 	    
 	    
