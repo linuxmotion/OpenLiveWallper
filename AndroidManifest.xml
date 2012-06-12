@@ -43,6 +43,8 @@
             android:name="org.linuxmotion.filemanager.openFileManagerActivity">
          </activity>
          
+        <activity android:name=".WallpaperViewer"></activity>
+         
     </application>
 
 </manifest>

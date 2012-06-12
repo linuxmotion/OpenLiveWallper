@@ -51,7 +51,7 @@ public class OpenLiveWallPaperActivity extends Activity {
 	}
 	public void startDefaultSelection(View v){
 		
-		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.GalleryViewer.class);
+		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.WallpaperViewer.class);
 		
 		startActivity(i); 
 	

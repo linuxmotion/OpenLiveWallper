@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="imageIds">
+        <item>clouds1</item>
+        <item>clouds2</item>
+        <item>coals</item>
+        <item>hills</item>
+        <item>snow</item>
+        <item>stream</item>
+        <item>agave</item>
+    </string-array>
+    
+</resources>
