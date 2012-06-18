@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.photoswitcher;
+package org.linuxmotion.livewallpaper.photoswitcher.services;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

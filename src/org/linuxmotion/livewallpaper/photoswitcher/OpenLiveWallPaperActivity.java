@@ -2,7 +2,6 @@ package org.linuxmotion.livewallpaper.photoswitcher;
 
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
-import org.linuxmotion.livewallpaper.photoswitcher.GalleryViewer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +19,7 @@ public class OpenLiveWallPaperActivity extends Activity {
 
 	private static final int REQ_CODE_PICK_IMAGE = 1;
 	private SharedPreferences mSharedPreferences;
+	private static boolean DEBUG = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -30,21 +30,18 @@ public class OpenLiveWallPaperActivity extends Activity {
 		Button phoneGalleryButtonSelect = (Button) this.findViewById(R.id.phoneGalleryButton);
 		TextView phoneGalleryTextSelect = (TextView) this.findViewById(R.id.phoneGalleryTextView);
 		
-		if(LicenseChecker.checkLicense() == false){ // Hide the views if the license is not available
+		if(LicenseChecker.checkLicense() || DEBUG ){ // Hide the views if the license is not available
 			
-			phoneGalleryTextSelect.setVisibility(View.GONE);
-			phoneGalleryButtonSelect.setVisibility(View.GONE);
+			phoneGalleryTextSelect.setVisibility(View.VISIBLE);
+			phoneGalleryButtonSelect.setVisibility(View.VISIBLE);
 		}
 		
 	}
 
 	
 	public void startSelection(View v){
-		Intent i = new Intent(Intent.ACTION_PICK,
-	               android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		
-		
-		
+
+		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser.class);
 		startActivityForResult(i, REQ_CODE_PICK_IMAGE); 
 	
 		
@@ -52,9 +49,7 @@ public class OpenLiveWallPaperActivity extends Activity {
 	public void startDefaultSelection(View v){
 		
 		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.WallpaperViewer.class);
-		
 		startActivity(i); 
-	
 		
 	}
 	
