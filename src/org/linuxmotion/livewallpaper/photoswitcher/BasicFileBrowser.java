@@ -2,16 +2,12 @@ package org.linuxmotion.livewallpaper.photoswitcher;
 
 import java.io.File;
 
-import org.linuxmotion.livewallpaper.photoswitcher.R;
 import org.linuxmotion.livewallpaper.utils.lists.ImageLoader;
 
-import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ListActivity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -23,17 +19,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import android.support.v4.util.LruCache;
+
 public class BasicFileBrowser extends ListActivity {
 	
 	ListView mSelectionList;
-	//GenericQueue data = new GenericQueue();
+	private LruCache<String,Bitmap> mMemoryCache;
+	ImageLoader mImageLoader = new ImageLoader();
 
 	@Override
 	  public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        //setContentView(R.layout.basic_file_selection);
-        //mSelectionList = (ListView) this.findViewById(android.R.id.list);
-       
         
         File photoPath = new File(Environment.getExternalStorageDirectory().toString() + "/DCIM/Camera"); // Dont hard code this
         // First paramenter - Context
@@ -42,9 +38,38 @@ public class BasicFileBrowser extends ListActivity {
         ArrayAdapter adapter = new SimpleFileAdapter(this, f);
 
         setListAdapter(adapter);
+        
+     // Get memory class of this device, exceeding this amount will throw an
+        // OutOfMemory exception.
+        final int memClass = ((ActivityManager) this.getApplicationContext().getSystemService(
+                Context.ACTIVITY_SERVICE)).getMemoryClass();
 
-		//data.mQue = new ImageQue(this);
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = 1024 * 1024 * memClass / 8;
+
+        mMemoryCache = new LruCache<String,Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in bytes rather than number of items.
+                return bitmap.getRowBytes() * bitmap.getHeight();// int result permits bitmaps up to 46,340 x 46,340
+            }
+        };
+
+
 	}
+	
+
+ 
+	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+	    if (getBitmapFromMemCache(key) == null) {
+	        mMemoryCache.put(key, bitmap);
+	    }
+	}
+
+	public Bitmap getBitmapFromMemCache(String key) {
+	    return mMemoryCache.get(key);
+	}
+
 	
 	class SimpleFileAdapter extends ArrayAdapter<File>{
 		private final Context mContext;
@@ -56,6 +81,7 @@ public class BasicFileBrowser extends ListActivity {
 			
 			mContext = context;
 			mPhotos  = photos;
+			
 		}
 		
 		
@@ -74,30 +100,25 @@ public class BasicFileBrowser extends ListActivity {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rowView = inflater.inflate(R.layout.rowlayout, parent, false);
 
-		     textView = (TextView) rowView.findViewById(R.id.label);
-			 imageView = (ImageView) rowView.findViewById(R.id.icon);
-			 selectedBox = (CheckBox) rowView.findViewById(R.id.box);
-			
-			//data.mQue.AddToQue(imageView.getId(), mPhotos[position].getAbsolutePath());
-			//data.mQue.startQueThread();
 			}
-			else{
-				
+			// Find the views for modification
+			{
 				textView = (TextView) rowView.findViewById(R.id.label);
 				 imageView = (ImageView) rowView.findViewById(R.id.icon);
 				 selectedBox = (CheckBox) rowView.findViewById(R.id.box);
-				
+
 			}
-			
 			// Modify the objects
+			{
 			String fullname = mPhotos[position].getName();
 			String name = fullname.substring(0, fullname.indexOf('.'));
 			
 			textView.setText(name); // remove the file type from the name
 			
-			ImageLoader setImage = new ImageLoader();
-			setImage.download(mPhotos[position].getAbsolutePath(), imageView);
 			
+			mImageLoader.download(mPhotos[position].getAbsolutePath(), imageView);
+			}
+			// Return the new view
 			return rowView;
 		}
 		
