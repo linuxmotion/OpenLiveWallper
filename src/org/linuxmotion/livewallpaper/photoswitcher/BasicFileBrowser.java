@@ -1,9 +1,11 @@
 package org.linuxmotion.livewallpaper.photoswitcher;
 
 import java.io.File;
-import java.io.IOException;
 
+import org.linuxmotion.concurrent.Images.CheckBoxClickListener;
+import org.linuxmotion.concurrent.Images.ImageClickListener;
 import org.linuxmotion.concurrent.Images.ImageLoader;
+import org.linuxmotion.livewallpaper.utils.DataBaseHelper;
 import org.linuxmotion.livewallpaper.utils.DiskLruImageCache;
 
 import android.app.ActivityManager;
@@ -24,9 +26,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.jakewharton.DiskLruCache;
-import com.jakewharton.DiskLruCache.Editor;
 
 public class BasicFileBrowser extends ListActivity {
 	
@@ -53,7 +52,7 @@ public class BasicFileBrowser extends ListActivity {
         ArrayAdapter adapter = new SimpleFileAdapter(this, List);
 
         setListAdapter(adapter);
-        
+
         
         initMemCache();
         initDiskCache();
@@ -171,10 +170,26 @@ public class BasicFileBrowser extends ListActivity {
 				 selectedBox = (CheckBox) rowView.findViewById(R.id.box);
 
 			}
+			
 			// Modify the objects
 			{
+			String Absolutepath = mPhotos[position].getAbsolutePath();
 			String fullname = mPhotos[position].getName();
 			String name = fullname.substring(0, fullname.indexOf('.'));
+			
+			// Set the click listener
+			{
+				imageView.setOnClickListener(new ImageClickListener(Absolutepath));
+				selectedBox.setOnClickListener(new CheckBoxClickListener(Absolutepath));
+				
+			}
+			// Is the file present in the database
+			// Is so inform the user with the checkbox
+			{
+				Boolean inDB = DataBaseHelper.isInDataBase(Absolutepath);
+				if(inDB)selectedBox.setChecked(true);
+				else selectedBox.setChecked(false);
+			}
 			
 			textView.setText(name); // remove the file type from the name
 	        final Bitmap bitmap = getBitmapFromMemCache(fullname);
