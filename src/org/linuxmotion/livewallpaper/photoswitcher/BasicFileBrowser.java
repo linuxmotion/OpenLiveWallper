@@ -2,7 +2,7 @@ package org.linuxmotion.livewallpaper.photoswitcher;
 
 import java.io.File;
 
-import org.linuxmotion.livewallpaper.utils.lists.ImageLoader;
+import org.linuxmotion.concurrent.Images.ImageLoader;
 
 import android.app.ActivityManager;
 import android.app.ListActivity;
@@ -33,8 +33,8 @@ public class BasicFileBrowser extends ListActivity {
         super.onCreate(icicle);
         
         File photoPath = new File(Environment.getExternalStorageDirectory().toString() + "/DCIM/Camera"); // Dont hard code this
-        // First paramenter - Context
-        // Forth - the Array of data
+       
+
         File[] f = photoPath.listFiles();
         ArrayAdapter adapter = new SimpleFileAdapter(this, f);
 

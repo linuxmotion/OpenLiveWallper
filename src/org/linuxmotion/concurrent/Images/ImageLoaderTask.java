@@ -1,9 +1,10 @@
-package org.linuxmotion.livewallpaper.utils.lists;
+package org.linuxmotion.concurrent.Images;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
 import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
+import org.linuxmotion.livewallpaper.utils.BitmapHelper;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -42,8 +43,8 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	        	  if (isCancelled()) return null;
 	        	  
 	        	  
-	        	  Bitmap bitmap = BitmapFactory.decodeFile(url, mOptions);
-	        	  if(bitmap != null)// Add bitmap to cache if bitmap != null
+	        	  Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromImage(url, 100, 100);
+ 				  if(bitmap != null)// Add bitmap to cache if bitmap != null
 	        		  mAct.addBitmapToMemoryCache(new File(params[0]).getName(), bitmap);
 
 	        	  return bitmap;// Return the bitmap,

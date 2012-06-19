@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.utils.lists;
+package org.linuxmotion.concurrent.Images;
 
 
 import java.lang.ref.WeakReference;
@@ -104,12 +104,10 @@ public class ImageLoader {
 
         if (bitmapDownloaderTask != null) {
             String bitmapUrl = bitmapDownloaderTask.getUrl();
-            // Cancel the task if the decoding urls are the same, or if the view is being reused
+            // Cancel the task if the view is being reused
             ImageView ref = bitmapDownloaderTask.getReference();
-            if ((bitmapUrl == null) ||
-            		(!bitmapUrl.equals(url)) ||
-            		(imageView.equals(ref)) ) { //Stops the old dowload associted with this view
-            	Log.i(TAG, "Canceling Potential task for image:" + bitmapDownloaderTask.getUrl());
+            if (bitmapUrl != url){
+            	Log.i(TAG, "Canceling prevoius task for image:" + bitmapDownloaderTask.getUrl());
                 bitmapDownloaderTask.cancel(true);
             } else {
                 // The same URL is already being downloaded.
