@@ -1,7 +1,12 @@
 package org.linuxmotion.livewallpaper.utils.lists;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
+import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
+
+import android.app.Activity;
+import android.app.ListActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -13,9 +18,10 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	private String url;
 	private final WeakReference<ImageView> imageViewReference;
 	private static BitmapFactory.Options mOptions;
+	private BasicFileBrowser mAct;
 	 
-	public ImageLoaderTask(ImageView imageView) {
-		
+	public ImageLoaderTask(BasicFileBrowser act, ImageView imageView) {
+		mAct = act;
 	    imageViewReference = new WeakReference<ImageView>(imageView);
 	    mOptions = new BitmapFactory.Options();
         mOptions.inSampleSize = 20;
@@ -34,7 +40,14 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 		  for(int i = 0; i < 2; i++){
 	          try {
 	        	  if (isCancelled()) return null;
-	        	  return BitmapFactory.decodeFile(url, mOptions);
+	        	  
+	        	  
+	        	  Bitmap bitmap = BitmapFactory.decodeFile(url, mOptions);
+	        	  if(bitmap != null)// Add bitmap to cache if bitmap != null
+	        		  mAct.addBitmapToMemoryCache(new File(params[0]).getName(), bitmap);
+
+	        	  return bitmap;// Return the bitmap,
+	        	  //can still be null here if it could not decode, ie a video file
 
 	          } catch (OutOfMemoryError e) {
 	        	  if (isCancelled()) return null;

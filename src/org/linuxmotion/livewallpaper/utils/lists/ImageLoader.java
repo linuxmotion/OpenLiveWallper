@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 
+import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
+
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask.Status;
 import android.util.Log;
@@ -21,8 +23,10 @@ public class ImageLoader {
 	
 
 
-    public void download(String url, ImageView imageView) {
-    	
+    public void download(BasicFileBrowser act, String url, ImageView imageView) {
+
+
+
     	Log.i(TAG, "The number of current tasks are" + mPointer);	
     	
     	if(mPointer >= MAX_TASK_COUNT){
@@ -30,7 +34,7 @@ public class ImageLoader {
     	}
     	
     	  if (cancelPotentialDecoding(url, imageView)) {
-    	         ImageLoaderTask task = new ImageLoaderTask(imageView);
+    	         ImageLoaderTask task = new ImageLoaderTask(act,imageView);
     	         DecodedDrawable downloadedDrawable = new DecodedDrawable(task);
     	         imageView.setImageDrawable(downloadedDrawable);
     	         mLastLoaded.add(mPointer++, new WeakReference<ImageView>(imageView));

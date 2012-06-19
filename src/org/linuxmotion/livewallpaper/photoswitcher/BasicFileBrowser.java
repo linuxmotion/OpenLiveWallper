@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,11 +63,14 @@ public class BasicFileBrowser extends ListActivity {
  
 	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromMemCache(key) == null) {
+	    	Log.i("BasicBrowser", "Setting cache file for image "+ key);
 	        mMemoryCache.put(key, bitmap);
 	    }
 	}
 
 	public Bitmap getBitmapFromMemCache(String key) {
+		Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
+		if(key == null)return null;
 	    return mMemoryCache.get(key);
 	}
 
@@ -74,13 +78,15 @@ public class BasicFileBrowser extends ListActivity {
 	class SimpleFileAdapter extends ArrayAdapter<File>{
 		private final Context mContext;
 		private final File[] mPhotos;
+		BasicFileBrowser mAct;
 		
-		public SimpleFileAdapter(Context context, File[] photos) {
+		public SimpleFileAdapter(BasicFileBrowser act, File[] photos) {
 			
-			super(context, R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
+			super(act.getApplicationContext(), R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
 			
-			mContext = context;
+			mContext = act.getApplicationContext();
 			mPhotos  = photos;
+			mAct = act;
 			
 		}
 		
@@ -114,10 +120,16 @@ public class BasicFileBrowser extends ListActivity {
 			String name = fullname.substring(0, fullname.indexOf('.'));
 			
 			textView.setText(name); // remove the file type from the name
-			
-			
-			mImageLoader.download(mPhotos[position].getAbsolutePath(), imageView);
-			}
+	        final Bitmap bitmap = getBitmapFromMemCache(fullname);
+		        if (bitmap != null) {
+		        	Log.i("BasicBrowser", "Setting cached bitmap");
+		            imageView.setImageBitmap(bitmap);
+		        }
+		        else{
+				imageView.setImageResource(R.drawable.image_loading_bg);
+				mImageLoader.download(mAct,mPhotos[position].getAbsolutePath(), imageView);
+				}
+	        }
 			// Return the new view
 			return rowView;
 		}
