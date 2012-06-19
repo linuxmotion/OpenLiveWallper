@@ -1,11 +1,12 @@
-package org.linuxmotion.concurrent.Images;
+package org.linuxmotion.concurrent;
 
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
-import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
+import org.linuxmotion.concurrent.images.AsyncDrawable;
+import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

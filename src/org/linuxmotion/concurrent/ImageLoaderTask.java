@@ -1,15 +1,12 @@
-package org.linuxmotion.concurrent.Images;
+package org.linuxmotion.concurrent;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
-import org.linuxmotion.livewallpaper.utils.BitmapHelper;
+import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
+import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;

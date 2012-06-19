@@ -1,10 +1,6 @@
-package org.linuxmotion.concurrent.Images;
-
-import org.linuxmotion.livewallpaper.utils.DataBaseHelper;
+package org.linuxmotion.livewallpaper.models;
 
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 
 public class ImageClickListener extends ListItemClickListener {
 

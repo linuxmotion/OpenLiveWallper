@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.utils;
+package org.linuxmotion.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -8,14 +8,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.linuxmotion.livewallpaper.utils.Constants;
+import org.linuxmotion.livewallpaper.utils.FileUtils;
+
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.jakewharton.DiskLruCache;
-
+/**
+ * A wrapper class for DiskLruCache from Jake Wanton.
+ * Specifically stores images to a file cache
+ * Taken from stack over flow
+ * See http://stackoverflow.com/questions/10185898/using-disklrucache-in-android-4-0-does-not-provide-for-opencache-method
+ * @author Platonius
+ * 
+ *
+ */
 public class DiskLruImageCache {
 
     private DiskLruCache mDiskCache;

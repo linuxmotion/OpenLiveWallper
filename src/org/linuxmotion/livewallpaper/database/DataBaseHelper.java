@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.utils;
+package org.linuxmotion.livewallpaper.database;
 
 import java.io.File;
 

@@ -1,13 +1,20 @@
-package org.linuxmotion.livewallpaper.photoswitcher;
+package org.linuxmotion.livewallpaper.activities;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.linuxmotion.livewallpaper.R;
+import org.linuxmotion.livewallpaper.utils.Constants;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +26,13 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import android.widget.Toast;
 
 
 public class WallpaperViewer extends Activity implements AdapterView.OnItemSelectedListener,
         OnClickListener {
 
-    private Gallery mGallery;
+	private Gallery mGallery;
     private ImageView mImageView;
     private TextView mInfoView;
     private boolean mIsWallpaperSet;
@@ -38,12 +42,15 @@ public class WallpaperViewer extends Activity implements AdapterView.OnItemSelec
     private ArrayList<Integer> mThumbs;
     private ArrayList<Integer> mImages;
     private WallpaperLoader mLoader;
+    SharedPreferences mSharedPreferences;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        mSharedPreferences = this.getSharedPreferences(Constants.SHARED_PREFS, 0);
+        
         findWallpapers();
 
         setContentView(R.layout.wallpaper_chooser);
@@ -119,14 +126,13 @@ public class WallpaperViewer extends Activity implements AdapterView.OnItemSelec
         }
 
         mIsWallpaperSet = true;
-        try {
-            InputStream stream = getResources().openRawResource(mImages.get(position));
-            setWallpaper(stream);
-            setResult(RESULT_OK);
-            finish();
-        } catch (IOException e) {
-            Log.e("Paperless System", "Failed to set wallpaper: " + e);
-        }
+        InputStream stream = getResources().openRawResource(mImages.get(position));
+		Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putInt(Constants.DEFAULT_IMAGE_SELECTION, position);
+		editor.commit();
+		setResult(RESULT_OK);
+		finish();
     }
 
     public void onNothingSelected(AdapterView parent) {

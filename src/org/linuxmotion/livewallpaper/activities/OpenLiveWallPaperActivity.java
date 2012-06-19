@@ -1,5 +1,6 @@
-package org.linuxmotion.livewallpaper.photoswitcher;
+package org.linuxmotion.livewallpaper.activities;
 
+import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
 
@@ -41,14 +42,14 @@ public class OpenLiveWallPaperActivity extends Activity {
 	
 	public void startSelection(View v){
 
-		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser.class);
+		Intent i = new Intent(this, org.linuxmotion.livewallpaper.activities.BasicFileBrowser.class);
 		startActivityForResult(i, REQ_CODE_PICK_IMAGE); 
 	
 		
 	}
 	public void startDefaultSelection(View v){
 		
-		Intent i = new Intent(this, org.linuxmotion.livewallpaper.photoswitcher.WallpaperViewer.class);
+		Intent i = new Intent(this, org.linuxmotion.livewallpaper.activities.WallpaperViewer.class);
 		startActivity(i); 
 		
 	}

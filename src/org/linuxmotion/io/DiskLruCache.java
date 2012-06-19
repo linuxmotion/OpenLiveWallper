@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package com.jakewharton;
+package org.linuxmotion.io;
+/*
+ * Orinal package is com.jakewarton
+ * see https://github.com/JakeWharton/DiskLruCache
+ * 
+ */
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;

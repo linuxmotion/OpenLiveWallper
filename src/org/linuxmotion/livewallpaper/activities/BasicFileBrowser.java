@@ -1,12 +1,13 @@
-package org.linuxmotion.livewallpaper.photoswitcher;
+package org.linuxmotion.livewallpaper.activities;
 
 import java.io.File;
 
-import org.linuxmotion.concurrent.Images.CheckBoxClickListener;
-import org.linuxmotion.concurrent.Images.ImageClickListener;
-import org.linuxmotion.concurrent.Images.ImageLoader;
-import org.linuxmotion.livewallpaper.utils.DataBaseHelper;
-import org.linuxmotion.livewallpaper.utils.DiskLruImageCache;
+import org.linuxmotion.concurrent.ImageLoader;
+import org.linuxmotion.io.DiskLruImageCache;
+import org.linuxmotion.livewallpaper.R;
+import org.linuxmotion.livewallpaper.database.DataBaseHelper;
+import org.linuxmotion.livewallpaper.models.CheckBoxClickListener;
+import org.linuxmotion.livewallpaper.models.ImageClickListener;
 
 import android.app.ActivityManager;
 import android.app.ListActivity;

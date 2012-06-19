@@ -1,6 +1,6 @@
 package org.linuxmotion.livewallpaper.utils;
 
-import org.linuxmotion.livewallpaper.photoswitcher.R;
+import org.linuxmotion.livewallpaper.R;
 
 public class Constants {
 
