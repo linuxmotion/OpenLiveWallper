@@ -18,16 +18,13 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
 	private String url;
 	private final WeakReference<ImageView> imageViewReference;
-	private static BitmapFactory.Options mOptions;
+
 	private BasicFileBrowser mAct;
 	 
 	public ImageLoaderTask(BasicFileBrowser act, ImageView imageView) {
 		mAct = act;
 	    imageViewReference = new WeakReference<ImageView>(imageView);
-	    mOptions = new BitmapFactory.Options();
-        mOptions.inSampleSize = 20;
-        mOptions.inDither = false;
-        mOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
 	}
 
 	    
