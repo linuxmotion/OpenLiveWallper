@@ -3,13 +3,12 @@ package org.linuxmotion.concurrent.Images;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 
 import org.linuxmotion.livewallpaper.photoswitcher.BasicFileBrowser;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -20,8 +19,12 @@ public class ImageLoader {
 	private static final String TAG = ImageLoader.class.getSimpleName();
 	private ArrayList<WeakReference<ImageView>> mLastLoaded = new ArrayList<WeakReference<ImageView>>();
 	private int mPointer = 0;
+	private Bitmap mLoadingMap;
 	
-
+	public ImageLoader(Bitmap loading){
+		
+		mLoadingMap = loading;
+	}
 
     public void download(BasicFileBrowser act, String url, ImageView imageView) {
 
@@ -29,7 +32,7 @@ public class ImageLoader {
     	
     	  if (cancelPotentialDecoding(url, imageView)) {
     	         ImageLoaderTask task = new ImageLoaderTask(act,imageView);
-    	         DecodedDrawable downloadedDrawable = new DecodedDrawable(task);
+    	         AsyncDrawable downloadedDrawable = new   AsyncDrawable(act.getResources(),mLoadingMap, task);
     	         imageView.setImageDrawable(downloadedDrawable);
     	         try{
     	        	 task.execute(url);
@@ -61,8 +64,8 @@ public class ImageLoader {
    protected static ImageLoaderTask getImageLoaderTask(ImageView imageView) {
         if (imageView != null) {
             Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof DecodedDrawable) {
-                DecodedDrawable downloadedDrawable = (DecodedDrawable)drawable;
+            if (drawable instanceof   AsyncDrawable) {
+            	  AsyncDrawable downloadedDrawable = (  AsyncDrawable)drawable;
                 return downloadedDrawable.getImageLoaderTask();
             }
         }

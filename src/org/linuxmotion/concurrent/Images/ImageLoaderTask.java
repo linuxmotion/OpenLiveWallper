@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
+	private static final String TAG = ImageLoaderTask.class.getSimpleName();
 	private String url;
 	private final WeakReference<ImageView> imageViewReference;
 
@@ -39,10 +40,17 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	          try {
 	        	  if (isCancelled()) return null;
 	        	  
-	        	  
-	        	  Bitmap bitmap = BitmapHelper.decodeSampledBitmapFromImage(url, 100, 100);
- 				  if(bitmap != null)// Add bitmap to cache if bitmap != null
-	        		  mAct.addBitmapToMemoryCache(new File(params[0]).getName(), bitmap);
+	        	  Bitmap bitmap = mAct.getBitmapFromDiskCache(url);
+	        	  if(bitmap != null)Log.i(TAG, "Using disk cached bitmap");
+	        	  // No cached bitmap found
+	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(url, 100, 100);
+ 				  if(bitmap != null){// Add bitmap to cache if bitmap was decoded
+ 					  String f = new File(params[0]).getName();
+ 					  
+ 					  mAct.addBitmapToDiskCache(f, bitmap);
+ 					  mAct.addBitmapToMemoryCache(f, bitmap);
+ 				  }
+	        		  
 
 	        	  return bitmap;// Return the bitmap,
 	        	  //can still be null here if it could not decode, ie a video file

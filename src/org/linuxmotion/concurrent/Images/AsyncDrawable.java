@@ -3,14 +3,15 @@ package org.linuxmotion.concurrent.Images;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
-class DecodedDrawable extends ColorDrawable {
+class AsyncDrawable extends BitmapDrawable {
     private final WeakReference<ImageLoaderTask> ImageloaderTaskReference;
 
-    public DecodedDrawable(ImageLoaderTask bitmaploaderTask) {
-        super(Color.BLACK);
+    public AsyncDrawable(Resources res, Bitmap bitmap, ImageLoaderTask bitmaploaderTask) {
+        super(res, bitmap);
         ImageloaderTaskReference =
             new WeakReference<ImageLoaderTask>(bitmaploaderTask);
 
