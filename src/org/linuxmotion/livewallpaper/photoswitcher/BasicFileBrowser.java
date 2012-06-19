@@ -69,7 +69,7 @@ public class BasicFileBrowser extends ListActivity {
 	}
 
 	public Bitmap getBitmapFromMemCache(String key) {
-		Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
+		//Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
 		if(key == null)return null;
 	    return mMemoryCache.get(key);
 	}
@@ -126,7 +126,7 @@ public class BasicFileBrowser extends ListActivity {
 		            imageView.setImageBitmap(bitmap);
 		        }
 		        else{
-				imageView.setImageResource(R.drawable.image_loading_bg);
+				//imageView.setImageResource(R.drawable.image_loading_bg);
 				mImageLoader.download(mAct,mPhotos[position].getAbsolutePath(), imageView);
 				}
 	        }

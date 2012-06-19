@@ -34,7 +34,7 @@ public class ImageLoader {
     	         try{
     	        	 task.execute(url);
     	         }catch(RejectedExecutionException e){
-    	        	 e.printStackTrace();
+    	        	 //e.printStackTrace();
     	        	 // Is the cancel function having a fall through
     	         }
     	     }
@@ -47,7 +47,6 @@ public class ImageLoader {
         if (bitmapDownloaderTask != null) {
             String bitmapUrl = bitmapDownloaderTask.getUrl();
             // Cancel the task if the view is being reused
-            ImageView ref = bitmapDownloaderTask.getReference();
             if (bitmapUrl != null && bitmapUrl != url ){
             	Log.i(TAG, "Canceling prevoius task for image:" + bitmapDownloaderTask.getUrl());
                 bitmapDownloaderTask.cancel(true);
