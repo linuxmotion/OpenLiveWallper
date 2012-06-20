@@ -1,9 +1,6 @@
 package org.linuxmotion.livewallpaper.models;
 
-import java.lang.ref.WeakReference;
-
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
-import org.linuxmotion.livewallpaper.database.MyImageDatabase;
 
 import android.view.View;
 import android.widget.CheckBox;

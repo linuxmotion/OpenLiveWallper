@@ -115,13 +115,13 @@ public class BasicFileBrowser extends ListActivity {
 
 	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromMemCache(key) == null) {
-	    	Log.i("BasicBrowser", "Setting mem cache file for image "+ key);
+	    	//Log.i("BasicBrowser", "Setting mem cache file for image "+ key);
 	        mMemoryCache.put(key, bitmap);
 	    }
 	}
 	public void addBitmapToDiskCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromDiskCache(key) == null) {
-	    	Log.i("BasicBrowser", "Setting disk cache file for image "+ key);
+	    	//Log.i("BasicBrowser", "Setting disk cache file for image "+ key);
 	    	mDiskCache.put(key, bitmap);
 	    }
 	}
@@ -199,14 +199,16 @@ public class BasicFileBrowser extends ListActivity {
 				}
 			
 			textView.setText(name); // remove the file type from the name
+			
+			//String hash = String.valueOf(((new File(Absolutepath)).hashCode()));
+			
 	        final Bitmap bitmap = getBitmapFromMemCache(fullname);
 		        if (bitmap != null) {
-		        	Log.i("BasicBrowser", "Setting cached bitmap");
+		        	Log.i("BasicBrowser", "Setting cached bitmap for name = " + fullname);
 		            imageView.setImageBitmap(bitmap);
 		        }
-		        else{
-				//imageView.setImageResource(R.drawable.image_loading_bg);
-				mImageLoader.download(mAct,mPhotos[position].getAbsolutePath(), imageView);
+		        else{	
+		        	mImageLoader.download(mAct,Absolutepath, imageView);
 				}
 	        }
 			// Return the new view

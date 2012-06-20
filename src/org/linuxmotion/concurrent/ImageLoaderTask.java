@@ -31,18 +31,21 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	protected Bitmap doInBackground(String... params) {
 		// params comes from the execute() call: params[0] is the url.
 		  url = params[0];
+	      String f = new File(params[0]).getName();
+	      
+	      String hash = String.valueOf((new File(f)).hashCode());
+	      
 		  if (isCancelled()) return null;
           
 		  for(int i = 0; i < 2; i++){
 	          try {
 	        	  if (isCancelled()) return null;
-	        	  
-	        	  Bitmap bitmap = mAct.getBitmapFromDiskCache(url);
-	        	  if(bitmap != null)Log.i(TAG, "Using disk cached bitmap");
+	        	  Bitmap bitmap = mAct.getBitmapFromDiskCache(hash);
+	        	  if(bitmap != null)Log.i(TAG, "Using disk cached bitmap for image = "+ f);
 	        	  // No cached bitmap found
 	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(url, 100, 100);
  				  if(bitmap != null){// Add bitmap to cache if bitmap was decoded
- 					  String f = new File(params[0]).getName();
+ 					  
  					  
  					  mAct.addBitmapToDiskCache(f, bitmap);
  					  mAct.addBitmapToMemoryCache(f, bitmap);

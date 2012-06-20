@@ -155,7 +155,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    mCursor = 	mDatabase.rawQuery(selectQuery, null);
 	    if(mCursor.getCount() > 0){
 	    	mCursor.moveToFirst();
-	    	Log.i(TAG, "Entry is already present for " + mCursor.getInt(0));
+	    	//Log.i(TAG, "Entry is present for " + mCursor.getInt(0));
 	    	mCursor.close();
 	    	mDatabase.close();
 	    	return true; // A key entry was found

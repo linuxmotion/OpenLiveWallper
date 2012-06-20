@@ -12,6 +12,7 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 	DataBaseHelper mHelper;
 	WeakReference<CheckBox> mCheckBox;
 	private int KEY_ID;
+	private String mPath;
 	
 	CheckBoxLoaderTask(DataBaseHelper helper, CheckBox box){
 		mHelper = helper;
@@ -21,19 +22,26 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 	@Override
 	protected Boolean doInBackground(String... params) {
 		if(isCancelled())return null;
-		return mHelper.isInDataBase(params[0]);
+		mPath = params[0];
+		return mHelper.isInDataBase(mPath);
 
 	}
 	
 	@Override
 	protected void onPostExecute(Boolean result){
-		if(result == null){
-			// Shouldnt recieve a null here, but just in case
-			mCheckBox.get().setChecked(false);
-		}
-		else{
-			mCheckBox.get().setChecked(result);
-		}
+		 if (isCancelled()) {
+	        	return;
+	        }
+		 if(mCheckBox != null){
+			 
+			if(result == null){
+				// Shouldnt recieve a null here, but just in case
+				mCheckBox.get().setChecked(false);
+			}
+			else{
+				mCheckBox.get().setChecked(result);
+			}
+		 }
 	}
 
 	/**
@@ -48,5 +56,9 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 	 */
 	public int getKey() {
 		return KEY_ID;
+	}
+
+	public String getPath() {
+		return mPath;
 	}
 }

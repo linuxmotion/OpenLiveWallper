@@ -1,6 +1,7 @@
 package org.linuxmotion.concurrent;
 
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
@@ -26,16 +27,16 @@ public class ImageLoader {
 		mLoadingMap = loading;
 	}
 
-    public void download(BasicFileBrowser act, String url, ImageView imageView) {
+    public void download(BasicFileBrowser act, String abspath, ImageView imageView) {
 
 
     	
-    	  if (cancelPotentialDecoding(url, imageView)) {
+    	  if (cancelPotentialDecoding(abspath, imageView)) {
     	         ImageLoaderTask task = new ImageLoaderTask(act,imageView);
     	         AsyncDrawable downloadedDrawable = new   AsyncDrawable(act.getResources(),mLoadingMap, task);
     	         imageView.setImageDrawable(downloadedDrawable);
     	         try{
-    	        	 task.execute(url);
+    	        	 task.execute(abspath);
     	         }catch(RejectedExecutionException e){
     	        	 //e.printStackTrace();
     	        	 // Is the cancel function having a fall through
@@ -44,14 +45,16 @@ public class ImageLoader {
 
         }
 
-	private static boolean cancelPotentialDecoding(String url, ImageView imageView) {
+	private static boolean cancelPotentialDecoding(String abspath, ImageView imageView) {
         ImageLoaderTask bitmapDownloaderTask = getImageLoaderTask(imageView);
 
+       
         if (bitmapDownloaderTask != null) {
-            String bitmapUrl = bitmapDownloaderTask.getUrl();
+        	// String hash = String.valueOf((new File(bitmapDownloaderTask.getUrl())).hashCode());
+            String bitmapPath = bitmapDownloaderTask.getUrl();
             // Cancel the task if the view is being reused
-            if (bitmapUrl != null && bitmapUrl != url ){
-            	Log.i(TAG, "Canceling prevoius task for image:" + bitmapDownloaderTask.getUrl());
+            if (bitmapPath != null && bitmapPath != abspath ){
+            	Log.i(TAG, "Canceling prevoius task for image:" + (new File(bitmapPath)).getName() );
                 bitmapDownloaderTask.cancel(true);
             } else {
                 // The same URL is already being downloaded.

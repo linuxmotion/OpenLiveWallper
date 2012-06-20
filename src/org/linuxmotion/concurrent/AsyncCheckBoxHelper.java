@@ -41,8 +41,10 @@ public class AsyncCheckBoxHelper {
 			CheckBoxLoaderTask task = selectedBox.getTask();
 			if(task != null){
 				int hash = (new File(absolutepath)).hashCode();
-				if(task.getKey() != hash){
-					Log.i(TAG, "Canceling task for hash " + hash);
+				String path = task.getPath();
+				
+				if(path != absolutepath && path != null){
+					Log.i(TAG, "Canceling task for image " + (new File(path)).getName());
 					task.cancel(true);
 					
 				}
