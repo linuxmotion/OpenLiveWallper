@@ -1,4 +1,4 @@
-package org.linuxmotion.concurrent.images;
+package org.linuxmotion.livewallpaper.models;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;

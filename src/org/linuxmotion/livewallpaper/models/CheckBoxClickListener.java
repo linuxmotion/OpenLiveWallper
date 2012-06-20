@@ -1,16 +1,19 @@
 package org.linuxmotion.livewallpaper.models;
 
+import java.lang.ref.WeakReference;
+
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
+import org.linuxmotion.livewallpaper.database.MyImageDatabase;
 
 import android.view.View;
 import android.widget.CheckBox;
 
 public class CheckBoxClickListener extends ListItemClickListener {
-
+	DataBaseHelper mDBHelper;
 	
-	public CheckBoxClickListener(String pathandname) {
+	public CheckBoxClickListener(DataBaseHelper db , String pathandname) {
 		super(pathandname);
-		// TODO Auto-generated constructor stub
+		mDBHelper =  db;
 	}
 
 	@Override
@@ -18,9 +21,9 @@ public class CheckBoxClickListener extends ListItemClickListener {
 		
 		Boolean checked = ((CheckBox)v).isChecked();
 		if(checked){
-			org.linuxmotion.livewallpaper.database.DataBaseHelper.AddToList(mImage);
+			mDBHelper.AddToList(mImage);
 		}else{
-			DataBaseHelper.RemoveFromList(mImage);
+			mDBHelper.RemoveFromList(mImage);
 		}
 		
 	}

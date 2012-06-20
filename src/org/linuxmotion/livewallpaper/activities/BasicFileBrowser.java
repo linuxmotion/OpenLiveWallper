@@ -2,10 +2,12 @@ package org.linuxmotion.livewallpaper.activities;
 
 import java.io.File;
 
+import org.linuxmotion.concurrent.AsyncCheckBoxHelper;
 import org.linuxmotion.concurrent.ImageLoader;
 import org.linuxmotion.io.DiskLruImageCache;
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
+import org.linuxmotion.livewallpaper.models.AsyncCheckBox;
 import org.linuxmotion.livewallpaper.models.CheckBoxClickListener;
 import org.linuxmotion.livewallpaper.models.ImageClickListener;
 
@@ -36,6 +38,8 @@ public class BasicFileBrowser extends ListActivity {
 	private DiskLruImageCache mDiskCache;
 	private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
 	private static final String DISK_CACHE_SUBDIR = "thumbnails";
+	private DataBaseHelper mDBHelper = new DataBaseHelper();
+	private AsyncCheckBoxHelper mCheckBoxHelper = new AsyncCheckBoxHelper();
 
 	
 	ImageLoader mImageLoader; 
@@ -44,6 +48,7 @@ public class BasicFileBrowser extends ListActivity {
         super.onCreate(icicle);
         
        
+        mDBHelper.openDatabase(this); // Prepare the helper
         
         mImageLoader = new ImageLoader(((BitmapDrawable) this.getResources().getDrawable(R.drawable.image_loading_bg)).getBitmap());
         
@@ -155,7 +160,7 @@ public class BasicFileBrowser extends ListActivity {
 			// Instatiate the objects
 			TextView textView;
 			ImageView imageView;
-			CheckBox  selectedBox;
+			AsyncCheckBox  selectedBox;
 			if (rowView == null) {
 				
 			
@@ -168,7 +173,7 @@ public class BasicFileBrowser extends ListActivity {
 			{
 				textView = (TextView) rowView.findViewById(R.id.label);
 				 imageView = (ImageView) rowView.findViewById(R.id.icon);
-				 selectedBox = (CheckBox) rowView.findViewById(R.id.box);
+				 selectedBox = (AsyncCheckBox) rowView.findViewById(R.id.box);
 
 			}
 			
@@ -178,19 +183,20 @@ public class BasicFileBrowser extends ListActivity {
 			String fullname = mPhotos[position].getName();
 			String name = fullname.substring(0, fullname.indexOf('.'));
 			
-			// Set the click listener
-			{
-				imageView.setOnClickListener(new ImageClickListener(Absolutepath));
-				selectedBox.setOnClickListener(new CheckBoxClickListener(Absolutepath));
-				
-			}
-			// Is the file present in the database
-			// Is so inform the user with the checkbox
-			{
-				Boolean inDB = DataBaseHelper.isInDataBase(Absolutepath);
-				if(inDB)selectedBox.setChecked(true);
-				else selectedBox.setChecked(false);
-			}
+				// Set the click listener
+				{
+					imageView.setOnClickListener(new ImageClickListener(Absolutepath));
+					selectedBox.setOnClickListener(new CheckBoxClickListener(mDBHelper,Absolutepath));
+					
+				}
+				// Is the file present in the database
+				// Is so inform the user with the checkbox
+				// Threaded to not block the UI
+				{
+					selectedBox.setChecked(false);// So the user wont see checks when scrolling
+					mCheckBoxHelper.setChecked(mDBHelper, selectedBox, Absolutepath); // Will set the check for real
+	
+				}
 			
 			textView.setText(name); // remove the file type from the name
 	        final Bitmap bitmap = getBitmapFromMemCache(fullname);

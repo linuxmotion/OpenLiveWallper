@@ -6,7 +6,7 @@ public class Constants {
 
 	public static final String DEFAULT_IMAGE_SELECTION = "DEFAULT_IMAGE_SELECTION";
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static String SHARED_PREFS = "LIVE_WALLPAPER_PREFS";
 	

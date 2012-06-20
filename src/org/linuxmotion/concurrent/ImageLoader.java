@@ -5,8 +5,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
-import org.linuxmotion.concurrent.images.AsyncDrawable;
 import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
+import org.linuxmotion.livewallpaper.models.AsyncDrawable;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -18,7 +18,6 @@ public class ImageLoader {
 	private static final int MAX_TASK_COUNT = 128;
 	private static final int MIN_TASK_COUNT = 5;
 	private static final String TAG = ImageLoader.class.getSimpleName();
-	private ArrayList<WeakReference<ImageView>> mLastLoaded = new ArrayList<WeakReference<ImageView>>();
 	private int mPointer = 0;
 	private Bitmap mLoadingMap;
 	
