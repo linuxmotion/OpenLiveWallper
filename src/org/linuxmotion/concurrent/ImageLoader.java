@@ -2,8 +2,6 @@ package org.linuxmotion.concurrent;
 
 
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
 import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
@@ -16,10 +14,8 @@ import android.widget.ImageView;
 
 
 public class ImageLoader {
-	private static final int MAX_TASK_COUNT = 128;
-	private static final int MIN_TASK_COUNT = 5;
 	private static final String TAG = ImageLoader.class.getSimpleName();
-	private int mPointer = 0;
+
 	private Bitmap mLoadingMap;
 	
 	public ImageLoader(Bitmap loading){

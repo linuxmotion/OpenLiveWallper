@@ -3,6 +3,7 @@ package org.linuxmotion.concurrent;
 import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
 
+import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.models.AsyncCheckBox;
 
@@ -15,13 +16,13 @@ public class AsyncCheckBoxHelper {
 	public AsyncCheckBoxHelper(){
 		// Empty constructor
 	}
-	public void setChecked(DataBaseHelper helper, AsyncCheckBox selectedBox, String absolutepath) {
+	public void setChecked(BasicFileBrowser act, DataBaseHelper helper, AsyncCheckBox selectedBox, String absolutepath) {
 		
 		if(cancelPotentialQuery(selectedBox, absolutepath)){
-			CheckBoxLoaderTask task = new CheckBoxLoaderTask(helper, selectedBox);
+			CheckBoxLoaderTask task = new CheckBoxLoaderTask(act, helper, selectedBox);
 			if(selectedBox != null){
 				
-				task.setKey((new File(absolutepath)).hashCode());
+				//task.setKey((new File(absolutepath)).hashCode());
 				((AsyncCheckBox)selectedBox).setTask(task); // Save a reference to the task
 				
 			}
@@ -40,7 +41,7 @@ public class AsyncCheckBoxHelper {
 			
 			CheckBoxLoaderTask task = selectedBox.getTask();
 			if(task != null){
-				int hash = (new File(absolutepath)).hashCode();
+				//int hash = (new File(absolutepath)).hashCode();
 				String path = task.getPath();
 				
 				if(path != absolutepath && path != null){

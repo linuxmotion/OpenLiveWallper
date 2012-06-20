@@ -2,6 +2,7 @@ package org.linuxmotion.concurrent;
 
 import java.lang.ref.WeakReference;
 
+import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 
 import android.os.AsyncTask;
@@ -13,17 +14,24 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 	WeakReference<CheckBox> mCheckBox;
 	private int KEY_ID;
 	private String mPath;
+	BasicFileBrowser mAct;
 	
-	CheckBoxLoaderTask(DataBaseHelper helper, CheckBox box){
+	CheckBoxLoaderTask(BasicFileBrowser act, DataBaseHelper helper, CheckBox box){
 		mHelper = helper;
 		mCheckBox = new WeakReference<CheckBox>(box);
+		mAct = act;
 	}
 	
 	@Override
 	protected Boolean doInBackground(String... params) {
 		if(isCancelled())return null;
 		mPath = params[0];
-		return mHelper.isInDataBase(mPath);
+		Boolean inDB = mHelper.isInDataBase(mPath);
+		
+		if(isCancelled())return null;
+		mAct.addBooleanToMemCache(mPath, inDB); // Always add the CheckBox to the cache
+		if(isCancelled())return null;
+		return inDB;
 
 	}
 	

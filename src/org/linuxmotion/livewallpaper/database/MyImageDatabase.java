@@ -15,7 +15,7 @@ import android.util.Log;
 public class MyImageDatabase extends SQLiteOpenHelper {
 
 
-    private SQLiteDatabase mDatabase = this.getWritableDatabase();
+    private SQLiteDatabase mDatabase;
     private Cursor mCursor;
     // All Static variables
     // Database Version
@@ -44,24 +44,28 @@ public class MyImageDatabase extends SQLiteOpenHelper {
      */
 	public MyImageDatabase(Context context) {
         this(context, DATABASE_NAME, null, DATABASE_VERSION);
+        //mDatabase = this.getWritableDatabase();
+        //this.close();
 		//super(context, name, factory, version);
 	}
 	
 	public MyImageDatabase(Context context, String name, CursorFactory factory,
 			int version) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, name, null, version);
 		//super(context, name, factory, version);
 	}
-	
+	 
+
 	
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		Log.i(TAG, "Creating database");
 		// TODO Auto-generated method stub
 		 String CREATE_IMAGE_PATH_TABLE = "CREATE TABLE " + PATHS_TABLE + "("
          + KEY_ID + " INTEGER PRIMARY KEY," + PATH_ID + " TEXT )";
 		 db.execSQL(CREATE_IMAGE_PATH_TABLE);
-		 db.close();
+		 //db.close();
 	}
 
 	@Override

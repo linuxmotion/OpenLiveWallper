@@ -1,6 +1,7 @@
 package org.linuxmotion.livewallpaper.database;
 
 import java.io.File;
+import java.util.List;
 
 import android.content.Context;
 
@@ -56,6 +57,22 @@ public class DataBaseHelper {
 		if(path == null)return false;
 		File f = new File(path);
 		return mDatabase.isImagePathPresent(f.getAbsolutePath());
+	}
+
+	public String[] getAllEntries() {
+		
+		List<ImagePath> im = mDatabase.getAllImages();
+		int count = im.size();
+		String[] paths = new String[count]; 
+		for(int i = 0; i < count; i++){
+			
+			paths[i] = im.get(i).getImagePath();
+			
+		}
+		
+		return paths;
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
