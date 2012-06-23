@@ -10,6 +10,7 @@ import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.models.AsyncCheckBox;
 import org.linuxmotion.livewallpaper.models.CheckBoxClickListener;
 import org.linuxmotion.livewallpaper.models.ImageClickListener;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.app.ActivityManager;
 import android.app.ListActivity;
@@ -48,12 +49,15 @@ public class BasicFileBrowser extends ListActivity {
         super.onCreate(icicle);
         
        
-        mDBHelper.openDatabase(this); // Prepare the helper
+        mDBHelper.initDatabase(this); // Prepare the helper
+        mDBHelper.open();
         
         mImageLoader = new ImageLoader(((BitmapDrawable) this.getResources().getDrawable(R.drawable.image_loading_bg)).getBitmap());
         
      
         File[] List = getPhotoList();
+        if(List == null)
+        	List = new File[0];
         
         ArrayAdapter adapter = new SimpleFileAdapter(this, List);
 
@@ -66,6 +70,27 @@ public class BasicFileBrowser extends ListActivity {
 
 	}
 	
+	@Override
+	public void onStart(){
+		super.onStart();
+		if(!mDBHelper.isOpen()){
+			mDBHelper.open();
+		}
+	}
+	
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		mDBHelper.close();
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		// Close the database if it has not been closed yet
+		if(mDBHelper.isOpen())mDBHelper.close();
+	}
 
  
 	/**
@@ -167,7 +192,7 @@ public class BasicFileBrowser extends ListActivity {
 	 */
 	public boolean addBooleanToMemCache(String key, Boolean bool) {
 	    if (key == null) {
-	    	//Log.i("BasicBrowser", "Setting disk cache file for image "+ key);
+	    	Log.i("BasicBrowser", "Add mem cache for checkbox key "+ key);
 	    	
 	    	return mCheckBoxCache.put(key, bool);
 	    }
@@ -197,7 +222,6 @@ public class BasicFileBrowser extends ListActivity {
 		BasicFileBrowser mAct;
 		
 		public SimpleFileAdapter(BasicFileBrowser act, File[] photos) {
-			
 			super(act.getApplicationContext(), R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
 			
 			mContext = act.getApplicationContext();
@@ -248,10 +272,11 @@ public class BasicFileBrowser extends ListActivity {
 				// Threaded to not block the UI
 				{
 					selectedBox.setChecked(false);// So the user wont see checks when scrolling
-					Boolean bool = getBooleanFromMemCache(fullname);
+					Boolean bool = getBooleanFromMemCache(Absolutepath);
 					if(bool == null){
 						mCheckBoxHelper.setChecked(mAct, mDBHelper, selectedBox, Absolutepath); // Will set the check for real						
 					}else{
+						LogWrapper.Logi(TAG,"Setting cached checkbox value = " + bool);
 						selectedBox.setChecked(bool);
 					}
 					
@@ -263,7 +288,7 @@ public class BasicFileBrowser extends ListActivity {
 			
 	        final Bitmap bitmap = getBitmapFromMemCache(fullname);
 		        if (bitmap != null) {
-		        	Log.i("BasicBrowser", "Setting cached bitmap for name = " + fullname);
+		        	//Log.i("BasicBrowser", "Setting cached bitmap for name = " + fullname);
 		            imageView.setImageBitmap(bitmap);
 		        }
 		        else{	

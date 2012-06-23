@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
 
-
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,6 +29,10 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	private Resources mResources;
 	private Bitmap mBackground;
 	public float mScalingFactor;
+
+	private int mSwitchType = Constants.PLAIN_SWITCH;
+	public int mDrawType = Constants.PLAIN_DRAW;
+	
 	private static boolean mNewBackground = true;
 	private static int mDefaultSelection;
 	private static final boolean DBG = false; 
@@ -41,6 +43,14 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		mSharedPrefs = getSharedPreferences(Constants.SHARED_PREFS, 0);
 		mResources = getResources();
 		mDefaultSelection = mSharedPrefs.getInt(Constants.DEFAULT_IMAGE_SELECTION, 0);
+		
+		// Set the draw and switch state
+		mSwitchType = mSharedPrefs.getInt(Constants.SWITCH_TYPE, Constants.PLAIN_SWITCH);	
+		mDrawType = mSharedPrefs.getInt(Constants.DRAW_TYPE, Constants.PLAIN_DRAW);
+	
+		
+		
+		
 	}
 
 
@@ -71,9 +81,10 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	    private boolean mVisible;
 	    private static final float mMaxScale = 5;
 	    private static final float mMinScale = 0.25f;
-	    private static final float mScalingFactor = .25f;
+	    private static final float mScalingFactor = .10f;
 	    private float mScale = 1;
 	    private boolean mGrowAnimation = true;
+	    private boolean mLicensePresent = LicenseChecker.checkLicense();
 
 	    
 	    @Override
@@ -87,7 +98,6 @@ public class OpenLiveWallPaperService extends WallpaperService {
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStyle(Paint.Style.STROKE);
 
-            
 
             mStartTime = SystemClock.elapsedRealtime() + mRunTime;
 
@@ -123,6 +133,11 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	    
 	       @Override
 	        public void onVisibilityChanged(boolean visible) {
+	    	// Set the draw and switch state
+	   		mSwitchType = mSharedPrefs.getInt(Constants.SWITCH_TYPE, Constants.PLAIN_SWITCH);	
+	   		mDrawType = mSharedPrefs.getInt(Constants.DRAW_TYPE, Constants.PLAIN_DRAW);
+	   	
+	   		
 	            mVisible = visible;
 	            if (visible) {
 	                displayPicture();
@@ -152,7 +167,126 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
 
 	            final SurfaceHolder holder = getSurfaceHolder();
+	            
+	            switch(mSwitchType){
+	            
+	            case Constants.PLAIN_SWITCH:{
+
+		        	Log.d(TAG, "Drawing the plain switch");
+		        	// Do nothing plain draw will write everything over
+	            	//switchPlain(holder);
+	            }break;
+	            case Constants.ZOOM_SWITCH:{
+	            	switchZoom(holder);
+	            	
+	            }break;
+	            case Constants.BOUNCE_SWITCH:{
+
+	            }break;
+            }
+	            
 				
+	            switch(mDrawType){
+	            
+		            case Constants.PLAIN_DRAW:{
+
+			        	Log.d(TAG, "Drawing with no affects");
+		            	drawPlain(holder);
+		            }break;
+		            case Constants.ZOOM_DRAW:{
+		            	drawZoom(holder);
+		            	
+		            }break;
+		            case Constants.BOUNCE_DRAW:{
+
+		            }
+	            }
+
+	        	Log.d(TAG, "Animation is finished");
+	        	if(mDrawType == Constants.PLAIN_DRAW){
+		        	if(mStartTime <= SystemClock.elapsedRealtime()){
+						
+			            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
+					}
+		            // Reschedule the next redraw
+		            mHandler.removeCallbacks(mTimeToSwitch);
+		            if (mVisible) {
+		               mHandler.postDelayed(mTimeToSwitch, mRunTime);
+		            }
+	        	}else{
+	        		
+	        		 mHandler.removeCallbacks(mTimeToSwitch);
+			            if (mVisible) {
+			               mHandler.postDelayed(mTimeToSwitch, mRunTime);
+			            }
+	        		
+	        	}
+	            
+	        	mNewBackground = true;
+
+
+	        }
+
+
+			private void switchZoom(SurfaceHolder holder) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			private void switchPlain(SurfaceHolder holder) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			private void drawPlain(final SurfaceHolder holder) {
+				// TODO Auto-generated method stub
+				   Canvas c = null;
+				
+		            	try {
+			                c = holder.lockCanvas();
+			                if (c != null) {
+			                    // draw something
+			                	log("Canvas aquired");
+			                	drawPlainPicture(c);
+			                }
+			            } finally {
+			                if (c != null){
+			                	log("Canvas posted");
+			                	holder.unlockCanvasAndPost(c);
+			                	c = null;
+			                }
+			            }
+			            
+			}
+
+
+			private void drawPlainPicture(Canvas c) {
+				
+				c.drawColor(Color.DKGRAY);
+				BitmapFactory.Options o = new BitmapFactory.Options();
+			    o.inJustDecodeBounds = false;
+			    o.inSampleSize = 10;
+			    mBackground = retreiveBitmap(o);
+				if(mBackground == null)Log.d(this.getClass().getSimpleName(), "Cannot decoded bitmap");
+				else{
+					
+					Paint paint = mPaint;
+					paint.setColor(Color.DKGRAY);
+
+					Matrix transform = new Matrix();
+
+					// Scale the bitmap to the size of the screen
+					c.drawBitmap(mBackground, transform,null);
+				}
+				
+
+				
+			}
+
+
+			private void drawZoom(final SurfaceHolder holder) {
 
 	            Canvas c = null;
 	            for(int frame = 0; frame < 300; frame++){
@@ -174,20 +308,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		            
 		         }
 
-	        	Log.d(TAG, "Animation is finished");
-	            
-	    		if(mStartTime <= SystemClock.elapsedRealtime()){
-					mNewBackground = true;
-		            mStartTime = SystemClock.elapsedRealtime() + mRunTime;
-				}
-	            // Reschedule the next redraw
-	            mHandler.removeCallbacks(mTimeToSwitch);
-	            if (mVisible) {
-	               mHandler.postDelayed(mTimeToSwitch, mRunTime);
-	            }
-
-
-	        }
+			}
 
 
 			private void drawAnimatedPicture(Canvas c) {
@@ -205,7 +326,8 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				
 					BitmapFactory.Options o = new BitmapFactory.Options();
 				    o.inJustDecodeBounds = false;
-				    o.inSampleSize = 2;
+				    o.inSampleSize = 10;
+				    
 				    
 				    mBackground = retreiveBitmap(o);
 						
@@ -241,19 +363,21 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				
 				if(mBackground == null || mNewBackground){
 					String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
-					Log.d(this.getClass().getSimpleName(), "Setting a new picture");
+					Log.d(this.getClass().getSimpleName(), "Getting a new picture");
 					Bitmap b;
 					mNewBackground = false;
 					
 					// If the default selection is at the max length return it to the first picture
 					if(mDefaultSelection == (Constants.DefaultPictures.length)){ mDefaultSelection = 0;}
 					
-					if(LicenseChecker.checkLicense()){
+					if(mLicensePresent){
 						// A license was found
 							
 							
 							try {
 								b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,options);
+								//Bitmap.createBitmap(b, 0, 0, 400, 800); // Create a croped bitmap for the screen size
+								//Bitmap.createScaledBitmap(b, 400, 800, false); // Scale the bit map
 							} catch (FileNotFoundException e) {
 								
 								// If the file cannot be found resort to a default bitmap and increment the number

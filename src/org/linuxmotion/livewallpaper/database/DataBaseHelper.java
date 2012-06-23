@@ -1,16 +1,23 @@
 package org.linuxmotion.livewallpaper.database;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
 
-public class DataBaseHelper {
+public class DataBaseHelper  {
 	
 	private static MyImageDatabase mDatabase; 
 	
-	public void openDatabase(Context context){
+	public void initDatabase(Context context){
 		mDatabase = new MyImageDatabase(context);
+		
+	}
+	
+	public void open(){
+		mDatabase.open();
 		
 	}
 	
@@ -74,7 +81,18 @@ public class DataBaseHelper {
 		// TODO Auto-generated method stub
 		
 	}
+
 	
+	public void close(){
+		
+		mDatabase.close();
+		
+		
+	}
+	
+	public boolean isOpen(){
+		return mDatabase.isOpen();
+	}
 	
 	
 
