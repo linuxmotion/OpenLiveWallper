@@ -25,16 +25,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 public class BasicFileBrowser extends ListActivity {
 	
 	private static final String TAG = BasicFileBrowser.class.getSimpleName();
-	private LruCache<String,Bitmap> mMemoryCache;
-	private LruCache<String,Boolean> mCheckBoxCache;
+	private LruCache<String, Bitmap> mMemoryCache;
+	private LruCache<String, Boolean> mCheckBoxCache;
 	private DiskLruImageCache mDiskCache;
 	private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
 	private static final String DISK_CACHE_SUBDIR = "thumbnails";
@@ -51,7 +49,9 @@ public class BasicFileBrowser extends ListActivity {
         mDBHelper.openDatabase(this); // Prepare the helper
         
         mImageLoader = new ImageLoader(((BitmapDrawable) this.getResources().getDrawable(R.drawable.image_loading_bg)).getBitmap());
-        
+            
+        initMemCache();
+        initDiskCache();
      
         File[] List = getPhotoList();
         
@@ -59,9 +59,7 @@ public class BasicFileBrowser extends ListActivity {
 
         setListAdapter(adapter);
 
-        
-        initMemCache();
-        initDiskCache();
+    
         
 
 	}
@@ -113,19 +111,18 @@ public class BasicFileBrowser extends ListActivity {
 	        // Use 1/16th of the available memory for this memory cache.
 	        final int boxcacheSize = 1024 * 1024 * memClass / 16;
 
-	        mCheckBoxCache = new LruCache<String,Boolean>(boxcacheSize) {
-	            @Override
-	            protected int sizeOf(String key, Boolean yana) {
-	                // The cache size will be measured in bytes rather than number of items.
-	                return 8;
-	            }
-	        };
+	       mCheckBoxCache = new LruCache<String,Boolean>(boxcacheSize); // cache will be measured in number of elements
+	       
 	       String[] s = mDBHelper.getAllEntries();
+	       int count = 0;
 	       for(int i = 0; i < s.length; i++){
 	    	   
-	    	  addBooleanToMemCache(s[i],true);
+	    	  if(addBooleanToMemCache(s[i],true))
+	    		  count++;
 	       }
 
+	       Log.i(TAG, "Added " + mCheckBoxCache.size() + " Checkboxes");
+	       Log.i(TAG, "The checkbox max cache size is: " + mCheckBoxCache.maxSize() );
 		
 	}
 
@@ -137,7 +134,7 @@ public class BasicFileBrowser extends ListActivity {
 	 * @param bitmap The bitmap to store
 	 * @return True if the bitmap was added succesfully
 	 */
-	public boolean addBitmapToMemoryCache(String key, Bitmap bitmap) {
+	public synchronized boolean addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromMemCache(key) == null) {
 	    	//Log.i("BasicBrowser", "Setting mem cache file for image "+ key);
 	        mMemoryCache.put(key, bitmap);
@@ -151,7 +148,7 @@ public class BasicFileBrowser extends ListActivity {
 	 * @param bitmap The bitmap to store
 	 * @return True if the bitmap was added successfully
 	 */
-	public boolean addBitmapToDiskCache(String key, Bitmap bitmap) {
+	public synchronized boolean addBitmapToDiskCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromDiskCache(key) == null) {
 	    	//Log.i("BasicBrowser", "Setting disk cache file for image "+ key);
 	    	mDiskCache.put(key, bitmap);
@@ -165,26 +162,28 @@ public class BasicFileBrowser extends ListActivity {
 	 * @param bool The Boolean to store
 	 * @return True if the Boolean was added successfully
 	 */
-	public boolean addBooleanToMemCache(String key, Boolean bool) {
-	    if (key == null) {
-	    	//Log.i("BasicBrowser", "Setting disk cache file for image "+ key);
+	public synchronized boolean addBooleanToMemCache(String key, Boolean bool) {
+	    if (getBooleanFromMemCache(key) == null) {
+	    	Log.i("BasicBrowser", "Adding mem cache for checkbox "+ key);
 	    	
-	    	return mCheckBoxCache.put(key, bool);
+	    	if(mCheckBoxCache == null)return false;
+	    	mCheckBoxCache.put(key, bool);
+	    	return true;
 	    }
 	    return false;
 	}
 	
-	public Bitmap getBitmapFromMemCache(String key) {
+	public synchronized Bitmap getBitmapFromMemCache(String key) {
 		//Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
 		if(key == null)return null;
 	    return mMemoryCache.get(key);
 	}
-	public Bitmap getBitmapFromDiskCache(String key) {
+	public synchronized Bitmap getBitmapFromDiskCache(String key) {
 		//Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
 		if(key == null)return null;
 	    return mDiskCache.getBitmap(key);
 	}
-	public Boolean getBooleanFromMemCache(String key) {
+	public synchronized Boolean getBooleanFromMemCache(String key) {
 		//Log.i("BasicBrowser", "Retriveing bitmap for "+ key);
 		if(key == null)return null;
 	    return mCheckBoxCache.get(key);
@@ -248,10 +247,11 @@ public class BasicFileBrowser extends ListActivity {
 				// Threaded to not block the UI
 				{
 					selectedBox.setChecked(false);// So the user wont see checks when scrolling
-					Boolean bool = getBooleanFromMemCache(fullname);
+					Boolean bool = getBooleanFromMemCache(Absolutepath);
 					if(bool == null){
 						mCheckBoxHelper.setChecked(mAct, mDBHelper, selectedBox, Absolutepath); // Will set the check for real						
 					}else{
+						Log.i(TAG, "Setting cached checkbox for image " + fullname);
 						selectedBox.setChecked(bool);
 					}
 					
@@ -263,7 +263,7 @@ public class BasicFileBrowser extends ListActivity {
 			
 	        final Bitmap bitmap = getBitmapFromMemCache(fullname);
 		        if (bitmap != null) {
-		        	Log.i("BasicBrowser", "Setting cached bitmap for name = " + fullname);
+		        	//Log.i("BasicBrowser", "Setting cached bitmap for name = " + fullname);
 		            imageView.setImageBitmap(bitmap);
 		        }
 		        else{	

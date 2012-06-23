@@ -1,15 +1,18 @@
 package org.linuxmotion.concurrent;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.CheckBox;
 
 public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 
+	private static final String TAG = CheckBoxLoaderTask.class.getName();
 	DataBaseHelper mHelper;
 	WeakReference<CheckBox> mCheckBox;
 	private int KEY_ID;
@@ -29,6 +32,7 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 		Boolean inDB = mHelper.isInDataBase(mPath);
 		
 		if(isCancelled())return null;
+		//Log.i(TAG, "Adding boolean to mem cache for img = " + (new File(mPath)).getName());
 		mAct.addBooleanToMemCache(mPath, inDB); // Always add the CheckBox to the cache
 		if(isCancelled())return null;
 		return inDB;

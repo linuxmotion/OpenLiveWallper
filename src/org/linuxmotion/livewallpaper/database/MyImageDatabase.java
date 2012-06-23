@@ -63,7 +63,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		Log.i(TAG, "Creating database");
 		// TODO Auto-generated method stub
 		 String CREATE_IMAGE_PATH_TABLE = "CREATE TABLE " + PATHS_TABLE + "("
-         + KEY_ID + " INTEGER PRIMARY KEY," + PATH_ID + " TEXT )";
+         + KEY_ID + " TEXT PRIMARY KEY," + PATH_ID + " TEXT )";
 		 db.execSQL(CREATE_IMAGE_PATH_TABLE);
 		 //db.close();
 	}
@@ -80,7 +80,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 	// Adding new contact
 	public synchronized void addImage(String path) {
-		Log.i(TAG, "Adding image with hash " + (new File(path)).hashCode());
+		Log.i(TAG, "Adding image "+ path);
     	mDatabase = this.getWritableDatabase();
 		 
 	    ContentValues values = new ContentValues();
@@ -88,7 +88,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	   File f = new File(path);
 	    
 	   if(!isImagePathPresent(path)){ // No need to insert into db if present
-		    values.put(KEY_ID, f.hashCode()); // Contact Name
+		    values.put(KEY_ID, f.getName()); // Contact Name
 		    values.put(PATH_ID, f.getAbsolutePath()); // Contact Phone Number
 		 
 		    // Inserting Row
