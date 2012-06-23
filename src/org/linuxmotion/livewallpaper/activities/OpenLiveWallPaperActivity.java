@@ -38,6 +38,7 @@ public class OpenLiveWallPaperActivity extends Activity {
 		}
 		
 	}
+	
 
 	
 	public void startSelection(View v){

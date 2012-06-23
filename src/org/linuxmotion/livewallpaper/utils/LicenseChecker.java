@@ -8,17 +8,19 @@ public class LicenseChecker {
 	
 	public static boolean checkLicense() {
 		
-		try{
-			Class liscence = Class.forName("org.linuxmotion.slidepapper.liscence");
-		}
-		catch(ClassNotFoundException error){
-			// There is no license present
-			Log.d(TAG, "License not found");
-			return false;
-			
-		}
-
+		if(Constants.DEBUG_LICENSE)return true;
+		else{
+			try{
+				Class<?> liscence = Class.forName("org.linuxmotion.slidepapper.liscence");
+			}
+			catch(ClassNotFoundException error){
+				// There is no license present
+				Log.d(TAG, "License not found");
+				return false;
+				
+			}
+			return true;
+		}	
 		
-		return true;
 	}
 }

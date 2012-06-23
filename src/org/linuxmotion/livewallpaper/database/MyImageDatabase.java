@@ -55,7 +55,10 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		//super(context, name, factory, version);
 	}
 	 
-
+	public void open(){
+		mDatabase = this.getWritableDatabase();
+		
+	}
 	
 
 	@Override
@@ -80,8 +83,8 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 	// Adding new contact
 	public synchronized void addImage(String path) {
-		Log.i(TAG, "Adding image "+ path);
-    	mDatabase = this.getWritableDatabase();
+		Log.i(TAG, "Adding image with hash " + (new File(path)).hashCode());
+
 		 
 	    ContentValues values = new ContentValues();
 	    
@@ -95,7 +98,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    	mDatabase.insert(PATHS_TABLE, null, values);
 	   
 	    }
-   		mDatabase.close(); // Closing database connection
+   		
 	}
 	 
 	// Getting single contact
@@ -122,7 +125,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	        } while (mCursor.moveToNext());
 	    }
 	    mCursor.close();
-	    mDatabase.close();
+
 	    // return contact list
 	    return pathList;
 		}
@@ -135,7 +138,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		    mCursor = 	mDatabase.rawQuery(selectQuery, null);
 		    int count = mCursor.getCount();
 		    mCursor.close();
-	    	mDatabase.close();
+
 		    return count;
 		}
 	// Updating single contact
@@ -146,7 +149,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	public synchronized void deleteImage(String path) {
     	mDatabase = this.getWritableDatabase();
     	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{String.valueOf(new File(path).hashCode())});
-    	mDatabase.close();
+  
 	}
 	
 
@@ -161,12 +164,17 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    	mCursor.moveToFirst();
 	    	//Log.i(TAG, "Entry is present for " + mCursor.getInt(0));
 	    	mCursor.close();
-	    	mDatabase.close();
+
 	    	return true; // A key entry was found
 	    	
 	    }
-	    
 		return false; // A key entry was not found
 	}
+	
+
+	public boolean isOpen(){
+		return mDatabase.isOpen();
+	}
+    
 
 }
