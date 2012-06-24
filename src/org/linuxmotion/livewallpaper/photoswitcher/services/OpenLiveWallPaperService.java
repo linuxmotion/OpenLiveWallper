@@ -3,8 +3,10 @@ package org.linuxmotion.livewallpaper.photoswitcher.services;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
+import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -36,6 +38,9 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	private static boolean mNewBackground = true;
 	private static int mDefaultSelection;
 	private static final boolean DBG = false; 
+	private DataBaseHelper mDBHelper= new DataBaseHelper();
+	String [] mEntries;
+	private int mEntryPointer = 0;
 	
 	@Override
 	public void onCreate() {
@@ -48,9 +53,9 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		mSwitchType = mSharedPrefs.getInt(Constants.SWITCH_TYPE, Constants.PLAIN_SWITCH);	
 		mDrawType = mSharedPrefs.getInt(Constants.DRAW_TYPE, Constants.PLAIN_DRAW);
 	
-		
-		
-		
+		mDBHelper.initDatabase(this);
+		mDBHelper.open();
+		mEntries = mDBHelper.getAllEntries();
 	}
 
 
@@ -97,6 +102,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
             paint.setStrokeWidth(2);
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStyle(Paint.Style.STROKE);
+            
 
 
             mStartTime = SystemClock.elapsedRealtime() + mRunTime;
@@ -372,17 +378,12 @@ public class OpenLiveWallPaperService extends WallpaperService {
 					
 					if(mLicensePresent){
 						// A license was found
-							
-							
-							try {
-								b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,options);
+								
+								b = BitmapHelper.decodeSampledBitmapFromImage(mEntries[mEntryPointer++], this.getDesiredMinimumWidth(), this.getDesiredMinimumHeight());
+								//b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,options);
 								//Bitmap.createBitmap(b, 0, 0, 400, 800); // Create a croped bitmap for the screen size
 								//Bitmap.createScaledBitmap(b, 400, 800, false); // Scale the bit map
-							} catch (FileNotFoundException e) {
-								
-								// If the file cannot be found resort to a default bitmap and increment the number
-								return BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
-							}
+							
 							if(b == null){
 								// If the bitmap cannot be decoded resort to a default bitmap and increment the number
 								return BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
