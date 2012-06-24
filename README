@@ -2,4 +2,19 @@ OpenLiveWallper
 
 Started 10-28-2011 at 7:00pm PST
 
-Lets see what i can get done in two hours! 
+
+
+Commit Tags: Used for specifing the dominant change in the commit
+
+LWP  - Live Wallpaper service: 
+UI   - User interface for the launchpad and settings
+MEM  - Memory
+RESP - Responsiveness
+UX   - User Experience: Many times accompanied by RESP/UI
+RP   - Rearrange Packages
+CON  - Concurent(Mutlithreading) changes
+LIST - UI for the checkbox listview
+SET  - Changes to settings activity
+IMG  - [DRAWABLE-Depreceated] Chnages to images
+LAY  - Layout changes
+MISC - Misc changes
