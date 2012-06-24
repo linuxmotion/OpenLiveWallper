@@ -1,26 +1,24 @@
 package org.linuxmotion.concurrent;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 
-import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
 public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
 	private static final String TAG = ImageLoaderTask.class.getSimpleName();
-	private String url;
+	private String mKey;
 	private final WeakReference<ImageView> imageViewReference;
 
-	private BasicFileBrowser mAct;
+	private ImageLoader mLoader;
 	 
-	public ImageLoaderTask(BasicFileBrowser act, ImageView imageView) {
-		mAct = act;
+	public ImageLoaderTask(ImageLoader loader, ImageView imageView) {
+		mLoader = loader;
 	    imageViewReference = new WeakReference<ImageView>(imageView);
 
 	}
@@ -30,25 +28,25 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	// Actual download method, run in the task thread
 	protected Bitmap doInBackground(String... params) {
 		// params comes from the execute() call: params[0] is the url.
-		  url = params[0];
-	      String f = new File(params[0]).getName();
+		  mKey = params[0];
+	      //String f = new File(params[0]).getName();
 	      
-	      String hash = String.valueOf((new File(f)).hashCode());
+	      //String hash = String.valueOf((new File(f)).hashCode());
 	      
 		  if (isCancelled()) return null;
           
 		  for(int i = 0; i < 2; i++){
 	          try {
 	        	  if (isCancelled()) return null;
-	        	  Bitmap bitmap = mAct.getBitmapFromDiskCache(hash);
-	        	  if(bitmap != null)Log.i(TAG, "Using disk cached bitmap for image = "+ f);
+	        	  Bitmap bitmap = mLoader.getBitmapFromDiskCache(mKey);
+	        	  if(bitmap != null) LogWrapper.Logi(TAG, "Using disk cached bitmap for image = "+ mKey);
 	        	  // No cached bitmap found
-	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(url, 100, 100);
+	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(mKey, 100, 100);
  				  if(bitmap != null){// Add bitmap to cache if bitmap was decoded
  					  
- 					  
- 					  mAct.addBitmapToDiskCache(f, bitmap);
- 					  mAct.addBitmapToMemoryCache(f, bitmap);
+ 					 
+ 					 mLoader.addBitmapToDiskCache(mKey, bitmap);
+ 					 mLoader.addBitmapToMemoryCache(mKey, bitmap);
  				  }
 	        		  
 
@@ -57,7 +55,7 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
 	          } catch (OutOfMemoryError e) {
 	        	  if (isCancelled()) return null;
-	        	  Log.e("ImageLoaderTask", "Failed to decode the bitmap due to Out of Memory Error");
+	        	  LogWrapper.Logv("ImageLoaderTask", "Failed to decode the bitmap due to Out of Memory Error");
 	        	  System.gc(); // Try and start garbage collection
 	 
 	        	  if (isCancelled()) return null;
@@ -88,8 +86,8 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	/**
 	 * @return the url
 	 */
-	public String getUrl() {
-		return url;
+	public String getKey() {
+		return mKey;
 	}
 
 	public ImageView getReference(){

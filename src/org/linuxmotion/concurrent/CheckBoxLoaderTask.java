@@ -1,40 +1,40 @@
 package org.linuxmotion.concurrent;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 
-import org.linuxmotion.livewallpaper.activities.BasicFileBrowser;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.CheckBox;
 
 public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 
-	private static final String TAG = CheckBoxLoaderTask.class.getName();
-	DataBaseHelper mHelper;
-	WeakReference<CheckBox> mCheckBox;
+	private static final String TAG = CheckBoxLoaderTask.class.getSimpleName();
+	private DataBaseHelper mHelper;
+	private WeakReference<CheckBox> mCheckBox;
+	private CheckBoxLoader mCheckBoxHelper;
 	private int KEY_ID;
+	private String STRING_KEY_ID;
 	private String mPath;
-	BasicFileBrowser mAct;
 	
-	CheckBoxLoaderTask(BasicFileBrowser act, DataBaseHelper helper, CheckBox box){
+	CheckBoxLoaderTask(CheckBoxLoader parentEnque, CheckBox box, DataBaseHelper helper){
 		mHelper = helper;
 		mCheckBox = new WeakReference<CheckBox>(box);
-		mAct = act;
+		mCheckBoxHelper = parentEnque;
+
 	}
-	
 	@Override
 	protected Boolean doInBackground(String... params) {
 		if(isCancelled())return null;
 		mPath = params[0];
+		
 		Boolean inDB = mHelper.isInDataBase(mPath);
 		
 		if(isCancelled())return null;
-		//Log.i(TAG, "Adding boolean to mem cache for img = " + (new File(mPath)).getName());
-		mAct.addBooleanToMemCache(mPath, inDB); // Always add the CheckBox to the cache
-		if(isCancelled())return null;
+		LogWrapper.Logv(TAG, "Beggining to add a boolean to mem cache for img = " + mPath);
+		mCheckBoxHelper.addBooleanToMemCache(mPath, inDB); // Always add the CheckBox to the cache
+
 		return inDB;
 
 	}
@@ -44,6 +44,7 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 		 if (isCancelled()) {
 	        	return;
 	        }
+		 
 		 if(mCheckBox != null){
 			 
 			if(result == null){
@@ -61,6 +62,17 @@ public class CheckBoxLoaderTask extends AsyncTask<String, Void, Boolean>{
 	 */
 	public void setKey(int k) {
 		KEY_ID = k;
+	}
+	
+	public void setStringKey(String key) {
+		STRING_KEY_ID = key;
+	}
+
+	/**
+	 * @return the kEY_ID
+	 */
+	public String getStringKey() {
+		return STRING_KEY_ID;
 	}
 
 	/**

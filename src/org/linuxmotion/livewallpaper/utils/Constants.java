@@ -85,6 +85,9 @@ public class Constants {
 	 * Picture is switched with a slide affect
 	 */
 	public static final int FLIP_SWITCH = FLIP_DRAW;
+	
+
+	public static final boolean INFORMATIONAL = true;
 
 
 	

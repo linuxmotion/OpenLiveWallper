@@ -83,16 +83,16 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 	// Adding new contact
 	public synchronized void addImage(String path) {
-		Log.i(TAG, "Adding image with hash " + (new File(path)).hashCode());
+		Log.i(TAG, "Adding image with name " + path);
 
 		 
 	    ContentValues values = new ContentValues();
 	    
-	   File f = new File(path);
+	  
 	    
 	   if(!isImagePathPresent(path)){ // No need to insert into db if present
-		    values.put(KEY_ID, f.getName()); // Contact Name
-		    values.put(PATH_ID, f.getAbsolutePath()); // Contact Phone Number
+		    values.put(KEY_ID, path); // Contact Name
+		    values.put(PATH_ID, path); // Contact Phone Number
 		 
 		    // Inserting Row
 	    	mDatabase.insert(PATHS_TABLE, null, values);
@@ -112,14 +112,13 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    // Select All Query
 	    String selectQuery = "SELECT  * FROM " + PATHS_TABLE;
 	 
-	    mDatabase = this.getWritableDatabase();
 	    mCursor = mDatabase.rawQuery(selectQuery, null);
 	
 	    // looping through all rows and adding to list
 	    if (mCursor.moveToFirst()) {
 	        do {
 	        	ImagePath image = new ImagePath();
-	            image.setImagePath(mCursor.getString(0));
+	            image.setImagePath(mCursor.getString(1));
 	            // Adding contact to list
 	            pathList.add(image);
 	        } while (mCursor.moveToNext());
@@ -134,7 +133,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	public synchronized  int getImagesCount() {
 		 String selectQuery = "SELECT  * FROM " + PATHS_TABLE;
 		 
-	    	mDatabase = this.getWritableDatabase();
+	    	
 		    mCursor = 	mDatabase.rawQuery(selectQuery, null);
 		    int count = mCursor.getCount();
 		    mCursor.close();
@@ -147,8 +146,8 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	 
 	// Deleting single contact
 	public synchronized void deleteImage(String path) {
-    	mDatabase = this.getWritableDatabase();
-    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{String.valueOf(new File(path).hashCode())});
+		Log.i(TAG, "Deleting image with name " + path);
+    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{path});
   
 	}
 	
@@ -156,7 +155,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	public synchronized boolean isImagePathPresent(String path) {
 
 	    // Select All Query
-	    String selectQuery = "SELECT  * FROM " + PATHS_TABLE+ " WHERE " + KEY_ID + " = " +new File(path).hashCode();
+	    String selectQuery = "SELECT  * FROM " + PATHS_TABLE + " WHERE " + KEY_ID + " = \"" + path +"\"";
 	 
     	mDatabase = this.getWritableDatabase();
 	    mCursor = 	mDatabase.rawQuery(selectQuery, null);

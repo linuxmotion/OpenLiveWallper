@@ -1,8 +1,6 @@
 package org.linuxmotion.livewallpaper.database;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
@@ -16,11 +14,7 @@ public class DataBaseHelper  {
 		
 	}
 	
-	public void open(){
-		mDatabase.open();
-		
-	}
-	
+
 	public void updatePhotoList(File[] photos){}
 
 	public void updatePhotoList(String[] photos){}
@@ -37,9 +31,7 @@ public class DataBaseHelper  {
 			public void run() {
 				// TODO Auto-generated method stub
 				mDatabase.addImage(image);
-			}}).run();
-		
-		
+			}}).run();	
 	}
 	
 	/**
@@ -55,15 +47,12 @@ public class DataBaseHelper  {
 			public void run() {
 				// TODO Auto-generated method stub
 				mDatabase.deleteImage(image);
-			}}).run();
-		
-		
+			}}).run();	
 	}
 
 	public Boolean isInDataBase(String path) {
 		if(path == null)return false;
-		File f = new File(path);
-		return mDatabase.isImagePathPresent(f.getAbsolutePath());
+		return mDatabase.isImagePathPresent(path);
 	}
 
 	public String[] getAllEntries() {
@@ -75,19 +64,16 @@ public class DataBaseHelper  {
 			
 			paths[i] = im.get(i).getImagePath();
 			
-		}
-		
-		return paths;
-		// TODO Auto-generated method stub
-		
+		}	
+		return paths;	
 	}
 
+	public void open(){
+		mDatabase.open();	
+	}	
 	
-	public void close(){
-		
-		mDatabase.close();
-		
-		
+	public void close(){	
+		mDatabase.close();		
 	}
 	
 	public boolean isOpen(){

@@ -49,7 +49,7 @@ public class ProPreference extends Preference {
 		
 		if(proView != null && proView instanceof ImageView){
 		
-			LogWrapper.Logi("ProPreference", "ImageView found");
+			LogWrapper.Logv("ProPreference", "ImageView found");
 			
 			view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), 0, view.getPaddingBottom());
 			proView.setBackgroundResource(R.drawable.ic_unpurchased);
