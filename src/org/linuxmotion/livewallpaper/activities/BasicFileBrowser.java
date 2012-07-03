@@ -7,24 +7,22 @@ import org.linuxmotion.concurrent.ImageLoader;
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.models.AsyncCheckBox;
-import org.linuxmotion.livewallpaper.models.CheckBoxClickListener;
-import org.linuxmotion.livewallpaper.models.ImageClickListener;
+import org.linuxmotion.livewallpaper.models.listeners.CheckBoxClickListener;
+import org.linuxmotion.livewallpaper.models.listeners.ImageClickListener;
 
 import android.app.ActivityManager;
-import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.AbsListView.OnScrollListener;
 
-public class BasicFileBrowser extends ListActivity {//implements OnScrollListener {
+public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollListener {
 	
 	private static final String TAG = BasicFileBrowser.class.getSimpleName();
 
@@ -100,28 +98,16 @@ public class BasicFileBrowser extends ListActivity {//implements OnScrollListene
         
 	}
 
-
-
-	
-
-
-
-
-
-
-
 	
 	class SimpleFileAdapter extends ArrayAdapter<File>{
 		private final Context mContext;
 		private final File[] mPhotos;
-		BasicFileBrowser mAct;
 		
-		public SimpleFileAdapter(BasicFileBrowser act, File[] photos) {
-			super(act.getApplicationContext(), R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
+		public SimpleFileAdapter(Context context, File[] photos) {
+			super(context, R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
 			
-			mContext = act.getApplicationContext();
+			mContext = context;
 			mPhotos  = photos;
-			mAct = act;
 			
 		}
 		

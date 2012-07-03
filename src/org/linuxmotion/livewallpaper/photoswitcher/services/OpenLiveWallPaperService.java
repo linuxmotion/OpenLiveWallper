@@ -1,13 +1,12 @@
 package org.linuxmotion.livewallpaper.photoswitcher.services;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -19,8 +18,11 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
 
 public class OpenLiveWallPaperService extends WallpaperService {
 
@@ -90,6 +92,8 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	    private float mScale = 1;
 	    private boolean mGrowAnimation = true;
 	    private boolean mLicensePresent = LicenseChecker.checkLicense();
+	    private int mWidth;
+	    private int mHeight;
 
 	    
 	    @Override
@@ -103,6 +107,11 @@ public class OpenLiveWallPaperService extends WallpaperService {
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStyle(Paint.Style.STROKE);
             
+          
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(displaymetrics);
+            mHeight = displaymetrics.heightPixels;
+            mWidth = displaymetrics.widthPixels;
 
 
             mStartTime = SystemClock.elapsedRealtime() + mRunTime;
@@ -133,7 +142,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
         public void onOffsetsChanged(float xOffset, float yOffset,
                 float xStep, float yStep, int xPixels, int yPixels) {
 			mOffset = xOffset;
-            displayPicture();
+            //displayPicture();
         }
 
 	    
@@ -142,6 +151,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	    	// Set the draw and switch state
 	   		mSwitchType = mSharedPrefs.getInt(Constants.SWITCH_TYPE, Constants.PLAIN_SWITCH);	
 	   		mDrawType = mSharedPrefs.getInt(Constants.DRAW_TYPE, Constants.PLAIN_DRAW);
+	   		
 	   	
 	   		
 	            mVisible = visible;
@@ -169,7 +179,6 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
 			
 	        protected void displayPicture() {
-	        	Log.d(TAG, "Drawing the animation");
 
 
 	            final SurfaceHolder holder = getSurfaceHolder();
@@ -178,7 +187,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            
 	            case Constants.PLAIN_SWITCH:{
 
-		        	Log.d(TAG, "Drawing the plain switch");
+		        	LogWrapper.Logv(TAG, "Drawing the plain switch");
 		        	// Do nothing plain draw will write everything over
 	            	//switchPlain(holder);
 	            }break;
@@ -230,7 +239,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	            
 	        	mNewBackground = true;
 
-
+	        	System.gc();
 	        }
 
 
@@ -334,7 +343,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				    o.inJustDecodeBounds = false;
 				    o.inSampleSize = 10;
 				    
-				    
+				    mBackground.recycle();
 				    mBackground = retreiveBitmap(o);
 						
 				    if(mBackground == null)Log.d(this.getClass().getSimpleName(), "Cannot decoded bitmap");
@@ -379,7 +388,8 @@ public class OpenLiveWallPaperService extends WallpaperService {
 					if(mLicensePresent){
 						// A license was found
 								
-								b = BitmapHelper.decodeSampledBitmapFromImage(mEntries[mEntryPointer++], this.getDesiredMinimumWidth(), this.getDesiredMinimumHeight());
+								b = BitmapHelper.decodeSampledBitmapFromImage(mEntries[mEntryPointer++], mWidth, mHeight);
+								if(mEntryPointer >= mEntries.length)mEntryPointer = 0;
 								//b = BitmapFactory.decodeStream(new FileInputStream(filePath),null,options);
 								//Bitmap.createBitmap(b, 0, 0, 400, 800); // Create a croped bitmap for the screen size
 								//Bitmap.createScaledBitmap(b, 400, 800, false); // Scale the bit map

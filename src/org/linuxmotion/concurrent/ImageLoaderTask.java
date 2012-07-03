@@ -2,6 +2,7 @@ package org.linuxmotion.concurrent;
 
 import java.lang.ref.WeakReference;
 
+import org.linuxmotion.livewallpaper.utils.AeSimpleSHA1;
 import org.linuxmotion.livewallpaper.utils.LogWrapper;
 import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
 
@@ -13,6 +14,7 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
 	private static final String TAG = ImageLoaderTask.class.getSimpleName();
 	private String mKey;
+	private String mPath;
 	private final WeakReference<ImageView> imageViewReference;
 
 	private ImageLoader mLoader;
@@ -28,7 +30,8 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	// Actual download method, run in the task thread
 	protected Bitmap doInBackground(String... params) {
 		// params comes from the execute() call: params[0] is the url.
-		  mKey = params[0];
+		  mPath = params[0];
+		  mKey = AeSimpleSHA1.SHA1(mPath);
 	      //String f = new File(params[0]).getName();
 	      
 	      //String hash = String.valueOf((new File(f)).hashCode());
@@ -39,9 +42,9 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 	          try {
 	        	  if (isCancelled()) return null;
 	        	  Bitmap bitmap = mLoader.getBitmapFromDiskCache(mKey);
-	        	  if(bitmap != null) LogWrapper.Logi(TAG, "Using disk cached bitmap for image = "+ mKey);
+	        	  if(bitmap != null) LogWrapper.Logv(TAG, "Using disk cached bitmap for image = "+ mKey);
 	        	  // No cached bitmap found
-	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(mKey, 100, 100);
+	        	  if(bitmap == null)bitmap = BitmapHelper.decodeSampledBitmapFromImage(mPath , 100, 100);
  				  if(bitmap != null){// Add bitmap to cache if bitmap was decoded
  					  
  					 
@@ -55,7 +58,7 @@ public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap>{
 
 	          } catch (OutOfMemoryError e) {
 	        	  if (isCancelled()) return null;
-	        	  LogWrapper.Logv("ImageLoaderTask", "Failed to decode the bitmap due to Out of Memory Error");
+	        	  LogWrapper.Loge("ImageLoaderTask", "Failed to decode the bitmap due to Out of Memory Error");
 	        	  System.gc(); // Try and start garbage collection
 	 
 	        	  if (isCancelled()) return null;

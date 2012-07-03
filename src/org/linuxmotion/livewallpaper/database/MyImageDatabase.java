@@ -1,8 +1,12 @@
 package org.linuxmotion.livewallpaper.database;
 
-import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.linuxmotion.livewallpaper.utils.AeSimpleSHA1;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -66,7 +70,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		Log.i(TAG, "Creating database");
 		// TODO Auto-generated method stub
 		 String CREATE_IMAGE_PATH_TABLE = "CREATE TABLE " + PATHS_TABLE + "("
-         + KEY_ID + " TEXT PRIMARY KEY," + PATH_ID + " TEXT )";
+         + KEY_ID + " INTERGER PRIMARY KEY," + PATH_ID + " TEXT )";
 		 db.execSQL(CREATE_IMAGE_PATH_TABLE);
 		 //db.close();
 	}
@@ -83,7 +87,6 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 	// Adding new contact
 	public synchronized void addImage(String path) {
-		Log.i(TAG, "Adding image with name " + path);
 
 		 
 	    ContentValues values = new ContentValues();
@@ -91,8 +94,12 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	  
 	    
 	   if(!isImagePathPresent(path)){ // No need to insert into db if present
-		    values.put(KEY_ID, path); // Contact Name
-		    values.put(PATH_ID, path); // Contact Phone Number
+		   
+		   String hash = AeSimpleSHA1.SHA1(path);
+		   LogWrapper.Logi(TAG, "Adding image with the path: " + path + " and hash: " + hash);
+	
+		    values.put(KEY_ID, hash); //  String hash
+		    values.put(PATH_ID, path); // String path
 		 
 		    // Inserting Row
 	    	mDatabase.insert(PATHS_TABLE, null, values);
@@ -146,8 +153,10 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	 
 	// Deleting single contact
 	public synchronized void deleteImage(String path) {
-		Log.i(TAG, "Deleting image with name " + path);
-    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{path});
+
+		String hash = AeSimpleSHA1.SHA1(path);		
+		LogWrapper.Logi(TAG, "Deleting image with name " + path + " and hash " + hash);	
+    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{hash});
   
 	}
 	
@@ -155,7 +164,8 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	public synchronized boolean isImagePathPresent(String path) {
 
 	    // Select All Query
-	    String selectQuery = "SELECT  * FROM " + PATHS_TABLE + " WHERE " + KEY_ID + " = \"" + path +"\"";
+		String hash = AeSimpleSHA1.SHA1(path);
+	    String selectQuery = "SELECT  * FROM " + PATHS_TABLE + " WHERE " + KEY_ID + " = \"" + hash +"\"";
 	 
     	mDatabase = this.getWritableDatabase();
 	    mCursor = 	mDatabase.rawQuery(selectQuery, null);
@@ -172,7 +182,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 
 	public boolean isOpen(){
-		return mDatabase.isOpen();
+		return (mDatabase != null ? mDatabase.isOpen() : false);
 	}
     
 

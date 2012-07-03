@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+	     <org.linuxmotion.livewallpaper.models.preferences.TimePickerPreference
+            android:summary="Seconds between switch" 
+            android:title="Time between switches" 
+            android:key="time_between_switches" 
+            android:shouldDisableView="false" 
+            android:widgetLayout="@layout/time_picked_text"
+            android:enabled="true"
+            android:onClick="showTimePickerDialog"/>
+	     <ListPreference
+	         android:title="Title"
+	         android:entries="@array/Switch_Types_labels" 
+	         android:entryValues="@array/Switch_Types_values"
+	         android:defaultValue="0"
+	         />
+    
+
+</PreferenceScreen>

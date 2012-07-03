@@ -1,7 +1,7 @@
 package org.linuxmotion.livewallpaper.activities;
 
 import org.linuxmotion.livewallpaper.R;
-import org.linuxmotion.livewallpaper.models.ProPreference;
+import org.linuxmotion.livewallpaper.models.preferences.ProPreference;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,11 @@ public class HeaderPreference extends PreferenceActivity {//implements OnPrefere
 	private PreferenceScreen mStandardUsers;
 	private ProPreference mProUsers;
 	private PreferenceScreen mAllUsers;
+	private static final String PACKAGES_ACTIVITIES = "org.linuxmotion.livewallpaper.activities";
+
+	private static final String SETTINGS = ".settings.Settings";
+	private static final String IMAGEBROWSER = ".BasicFileBrowser";
+	private static final String PAPERVIEWER = ".WallpaperViewer";
 	
 	 @Override
 	    protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +40,14 @@ public class HeaderPreference extends PreferenceActivity {//implements OnPrefere
 	         Intent intent;
 	         {
 	        	 intent = new Intent();
-	        	 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.WallpaperViewer");
+	        	 intent.setClassName(getApplicationContext(),PACKAGES_ACTIVITIES + PAPERVIEWER);
 	        	 mStandardUsers.setIntent(intent);
 	         }
 	         {
 	        	 if(mProUsers.isLicenseFound()){
 	        		 mProUsers.setEnabled(true);
 	        		 intent = new Intent();
-	        		 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.BasicFileBrowser");
+	        		 intent.setClassName(getApplicationContext(), PACKAGES_ACTIVITIES + IMAGEBROWSER);
 	        		 mProUsers.setIntent(intent);
 	        	 }else{
 
@@ -52,7 +57,7 @@ public class HeaderPreference extends PreferenceActivity {//implements OnPrefere
 	         }
 	         {
 	        	 intent = new Intent();
-	        	 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.settings.Settings");
+	        	 intent.setClassName(getApplicationContext(), PACKAGES_ACTIVITIES + SETTINGS);
 	        	 mAllUsers.setIntent(intent);
 	         }
 	         

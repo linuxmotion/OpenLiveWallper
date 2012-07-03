@@ -3,19 +3,37 @@ package org.linuxmotion.livewallpaper.utils;
 import org.linuxmotion.livewallpaper.R;
 
 public class Constants {
-
-	public static final String DEFAULT_IMAGE_SELECTION = "DEFAULT_IMAGE_SELECTION";
 	
-	public static final boolean DEBUG = false;
-	
-	public static final boolean ERROR = true;
-	
-	public static final boolean VERBOSE = false;
-	
+	/**
+	 * Debug the license portion without a license.<br/>
+	 * This Value should be set to false for a production
+	 * build 
+	 */
 	public static final boolean DEBUG_LICENSE = true;
 	
+	/**
+	 * Turn on/off LogWrappers debug log statements
+	 */
+	public static final boolean DEBUG = false;
+	/**
+	 * Turn on/off LogWrappers Error log statements
+	 */
+	public static final boolean ERRORS = true;
+	/**
+	 * Turn on/off LogWrappers verbose log statements
+	 */
+	public static final boolean VERBOSE = true;
 	
+	/**
+	 * Turn on/off LogWrappers warning log statements
+	 */
+	public static final boolean WARNINGS = true;
+	/**
+	 * Turn on/off LogWrappers informational log statements
+	 */
+	public static final boolean INFORMATIONAL = true;
 
+	
 	
 /*Draw constants, Also maped to the switch types
  * 
@@ -87,9 +105,10 @@ public class Constants {
 	public static final int FLIP_SWITCH = FLIP_DRAW;
 	
 
-	public static final boolean INFORMATIONAL = true;
 
 
+
+	public static final String DEFAULT_IMAGE_SELECTION = "DEFAULT_IMAGE_SELECTION";
 	
 	
 	/**

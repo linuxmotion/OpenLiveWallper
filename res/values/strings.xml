@@ -10,5 +10,21 @@
     <string name="selecting_default_pictures">Please press the button to begin selecting the pictures you wish to use. These pictures
         are included free of copyright restriction</string>
     <string name="headerViewString">Logo for the app</string>
-
+    <string name="Set">Set</string>
+    
+    <string-array name="Switch_Types_labels">
+        <item >Plain</item>
+        <item >Zooming</item>
+        <item >Slide</item>
+        <item >Flip</item>
+        <item >Bounce</item>
+    </string-array>
+    <string-array name="Switch_Types_values">
+        <item >0</item>
+        <item >1</item>
+        <item >4</item>
+        <item >3</item>
+        <item >2</item>
+    </string-array>
+    
 </resources>

@@ -7,13 +7,15 @@
     <PreferenceScreen
         android:key="standard_users"
         android:title="Included Wallpapers" />
-    <org.linuxmotion.livewallpaper.models.ProPreference
+    <org.linuxmotion.livewallpaper.models.preferences.ProPreference
         android:key="pro_users"
         android:title="Users Wallpapers"
         android:enabled="false" />
     <PreferenceScreen
         android:key="all_users"
-        android:title="General settings" />
+        android:title="General settings" >
+   
+    </PreferenceScreen>
    
 
 </PreferenceScreen>

@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.models;
+package org.linuxmotion.livewallpaper.models.preferences;
 
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;

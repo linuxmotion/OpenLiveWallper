@@ -6,6 +6,7 @@ import java.util.concurrent.RejectedExecutionException;
 import org.linuxmotion.io.DiskLruImageCache;
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.models.AsyncDrawable;
+import org.linuxmotion.livewallpaper.utils.AeSimpleSHA1;
 import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.app.ActivityManager;
@@ -113,10 +114,14 @@ public class ImageLoader {
 
     public void setImage(String abspath, ImageView imageView) {
 
+    	 if(abspath == null){
+         	throw new NullPointerException("The path for the image view is null");
+         }
 
     	//if (!mTaksHeld && cancelPotentialDecoding(abspath, imageView)) {
     	if(mUseCache){
-	    	Bitmap bmap = getBitmapFromMemCache(abspath);
+    		
+	    	Bitmap bmap = getBitmapFromMemCache(AeSimpleSHA1.SHA1(abspath));
 	    	if(bmap != null){
 	    		
 	    		imageView.setImageBitmap(bmap);
@@ -138,6 +143,8 @@ public class ImageLoader {
     	
 
         }
+    
+    
 
     private void initDiskCache(Context context, int cacheSize) {
 		  mDiskCache = new DiskLruImageCache(context, DISK_CACHE_SUBDIR, cacheSize, CompressFormat.JPEG, 50);
@@ -188,12 +195,21 @@ public class ImageLoader {
 
        
         if (bitmapDownloaderTask != null) {
-        	// String hash = String.valueOf((new File(bitmapDownloaderTask.getUrl())).hashCode());
+
             String bitmapPath = bitmapDownloaderTask.getKey();
+            String retHash = null;
+            if(bitmapPath != null)retHash = AeSimpleSHA1.SHA1(bitmapPath);        
+            String absHash = AeSimpleSHA1.SHA1(abspath);
+            
+            
+            LogWrapper.Logi(TAG, "The Sha1 has of the path: " + bitmapPath + " is hash: " + retHash);
+           
             // Cancel the task if the view is being reused
-            if (bitmapPath != null && bitmapPath != abspath ){
-            	LogWrapper.Logi(TAG, "Canceling prevoius task for image key: " + bitmapPath );
-                bitmapDownloaderTask.cancel(true);
+            if ((retHash != null) && (absHash != null) && (retHash != absHash)){
+            	LogWrapper.Logi(TAG, "Prevoius task for image key: " + 
+            			retHash + " was cancelled = " + 
+            				bitmapDownloaderTask.cancel(true));
+                
             } else {
                 // The same URL is already being downloaded.
                 return false;
@@ -222,7 +238,7 @@ public class ImageLoader {
 	 */
 	public synchronized boolean addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (mUseCache && getBitmapFromMemCache(key) == null) {
-	    	LogWrapper.Logv("BasicBrowser", "Setting mem cache file for bitmap "+ key);
+	    	LogWrapper.Logv(TAG, "Setting mem cache file for bitmap "+ key);
 	        mMemoryCache.put(key, bitmap);
 	     	return true;
 	    }
@@ -236,7 +252,7 @@ public class ImageLoader {
 	 */
 	public synchronized boolean addBitmapToDiskCache(String key, Bitmap bitmap) {
 	    if (mUseCache && getBitmapFromDiskCache(key) == null) {
-	    	LogWrapper.Logv("BasicBrowser", "Setting disk cache file for bitmap "+ key);
+	    	LogWrapper.Logv(TAG, "Setting disk cache file for bitmap "+ key);
 	    	mDiskCache.put(key, bitmap);
 	     	return true;
 	    }
@@ -244,14 +260,19 @@ public class ImageLoader {
 	}
 	
 	public synchronized Bitmap getBitmapFromMemCache(String key) {
-		LogWrapper.Logv("BasicBrowser", "Retriveing mem cached bitmap for "+ key);
+		
 		if(key == null)return null;
-	    return mUseCache?mMemoryCache.get(key):null;
+		Bitmap b = mUseCache?mMemoryCache.get(key):null;
+		if(b != null)
+			LogWrapper.Logv(TAG, "Retrived mem cached bitmap for "+ key);
+	    return b;
 	}
 	public synchronized Bitmap getBitmapFromDiskCache(String key) {
-		LogWrapper.Logv("BasicBrowser", "Retriveing disk cached bitmap for "+ key);
 		if(key == null)return null;
-	    return mUseCache?mDiskCache.getBitmap(key):null;
+	    Bitmap b =  mUseCache?mDiskCache.getBitmap(key):null;
+		if(b != null)
+			LogWrapper.Logv(TAG, "Retrived disk cached bitmap for "+ key);
+	    return b;
 	}
 
 	public void holdTaskLoader() {

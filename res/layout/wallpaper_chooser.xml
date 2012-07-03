@@ -39,10 +39,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
-    <Button android:id="@+id/set"
+    <Button
+        android:id="@+id/set"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:text="@string/Set" />
 
 </LinearLayout>
 

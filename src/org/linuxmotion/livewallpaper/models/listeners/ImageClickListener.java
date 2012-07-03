@@ -1,4 +1,4 @@
-package org.linuxmotion.livewallpaper.models;
+package org.linuxmotion.livewallpaper.models.listeners;
 
 import android.view.View;
 

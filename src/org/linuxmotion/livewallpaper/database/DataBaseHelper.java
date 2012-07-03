@@ -69,11 +69,12 @@ public class DataBaseHelper  {
 	}
 
 	public void open(){
-		mDatabase.open();	
+		if(!mDatabase.isOpen())mDatabase.open();	
 	}	
 	
-	public void close(){	
-		mDatabase.close();		
+	public void close(){
+		
+		if(mDatabase.isOpen())mDatabase.close();		
 	}
 	
 	public boolean isOpen(){
