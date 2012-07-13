@@ -11,6 +11,9 @@
         are included free of copyright restriction</string>
     <string name="headerViewString">Logo for the app</string>
     <string name="Set">Set</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Remove">Delete</string>
+    
     
     <string-array name="Switch_Types_labels">
         <item >Plain</item>

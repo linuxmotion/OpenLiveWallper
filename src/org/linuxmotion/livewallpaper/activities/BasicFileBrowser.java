@@ -145,7 +145,7 @@ public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollL
 			
 				// Set the click listener
 				{
-					imageView.setOnClickListener(new ImageClickListener(Absolutepath));
+					imageView.setOnClickListener(new ImageClickListener(this.getContext(),Absolutepath));
 					selectedBox.setOnClickListener(new CheckBoxClickListener(mCheckBoxHelper, mDBHelper,Absolutepath));
 					
 				}

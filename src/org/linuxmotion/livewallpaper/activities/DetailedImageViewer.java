@@ -16,23 +16,31 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-public class DetailedImageViewer extends Activity {
+public class DetailedImageViewer extends Activity implements OnClickListener {
 	
 	private static final String TAG = "DetailedImageViewer";
 
 	private DataBaseHelper mHelper = new DataBaseHelper();
 
+	ImageView mImageView;
+	Button mRemove;
+	Button mCancel;
+	Button mSet;
+	String mPath;
+	Boolean mIsInDB = false;
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    mHelper.initDatabase(this);
+	    mHelper.initDatabase(this.getApplicationContext());
 	    mHelper.open();
 	    // Get intent, action and MIME type
 	    Intent intent = getIntent();
@@ -40,9 +48,7 @@ public class DetailedImageViewer extends Activity {
 	    String type = intent.getType();
 
 	    if (Intent.ACTION_SEND.equals(action) && type != null) {
-	        if ("text/plain".equals(type)) {
-	            handleSendText(intent); // Handle text being sent
-	        } else if (type.startsWith("image/")) {
+	        if (type.startsWith("image/")) {
 	            handleSendImage(intent); // Handle single image being sent
 	        }
 	    } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
@@ -86,10 +92,11 @@ public class DetailedImageViewer extends Activity {
 
 	void handleSendImage(Intent intent) {
 	    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+	    
 	    if (imageUri != null) {
 	        String abspath = parseUriToFilename(imageUri);
 	        LogWrapper.Logi(TAG, "The path is "+ abspath);
-	        mHelper.AddToList(abspath);
+	        mPath = abspath;
 
 		    // Get the screen size
 		    DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -97,8 +104,31 @@ public class DetailedImageViewer extends Activity {
 		    setContentView(R.layout.detailedimageviewer);
 		    
 		    Bitmap b = BitmapHelper.decodeSampledBitmapFromImage(abspath, displaymetrics.widthPixels - 50, displaymetrics.heightPixels  - 50);
-		    ((ImageView)this.findViewById(R.id.DetailedViewer)).setImageBitmap(b);
+		    mImageView = (ImageView) findViewById(R.id.DetailedViewer);
+		    mImageView.setImageBitmap(b);
+  
 		    
+		   mSet = (Button)this.findViewById(R.id.setImageButton);
+		   mSet.setOnClickListener(this);
+		   
+		   mCancel = (Button)this.findViewById(R.id.CancelButton);
+		   mCancel.setOnClickListener(this);
+		   
+		   mRemove = (Button)this.findViewById(R.id.RemoveButton);
+		   mRemove.setOnClickListener(this);
+		   
+		   // Is the picture in the database
+		   if(mHelper.isInDataBase(abspath)){
+			    // If it is only show the remove button
+		    	mSet.setVisibility(View.GONE);
+		    	//mRemove.setVisibility(View.VISIBLE);
+		    }else{ 
+		    	// If it is not only show the set button
+		    	//mSet.setVisibility(View.VISIBLE);
+		    	mRemove.setVisibility(View.GONE);
+		    	
+		    	
+		    }
 	    }
 	}
 
@@ -131,7 +161,33 @@ public class DetailedImageViewer extends Activity {
 		    return filemanagerPath;
 		  }
 		   return null;
-		} 
+		}
+
+	
+	@Override
+	public void onClick(View arg0) {
+		
+		int id = arg0.getId();
+		switch(id){
+			case R.id.CancelButton: {
+				mHelper.close();
+				finish();
+		        
+			}break;
+			case R.id.RemoveButton: {
+		        mHelper.RemoveFromList(mPath);
+		        mHelper.close();
+		        finish();
+			}break;
+			case R.id.setImageButton: {
+				mHelper.AddToList(mPath);
+				mHelper.close();
+				finish();
+			}break;
+		
+		}
+		
+	} 
 
 
 }
