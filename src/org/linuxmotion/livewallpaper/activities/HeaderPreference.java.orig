@@ -1,0 +1,87 @@
+package org.linuxmotion.livewallpaper.activities;
+
+import org.linuxmotion.livewallpaper.R;
+<<<<<<< HEAD
+import org.linuxmotion.livewallpaper.models.preferences.ProPreference;
+=======
+import org.linuxmotion.livewallpaper.models.ProPreference;
+>>>>>>> fragments
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.widget.ImageView;
+
+public class HeaderPreference extends PreferenceActivity {//implements OnPreferenceClickListener{
+	
+	private ImageView mImage;
+	private PreferenceScreen mStandardUsers;
+	private ProPreference mProUsers;
+	private PreferenceScreen mAllUsers;
+<<<<<<< HEAD
+	private static final String PACKAGES_ACTIVITIES = "org.linuxmotion.livewallpaper.activities";
+
+	private static final String SETTINGS = ".settings.Settings";
+	private static final String IMAGEBROWSER = ".BasicFileBrowser";
+	private static final String PAPERVIEWER = ".WallpaperViewer";
+=======
+>>>>>>> fragments
+	
+	 @Override
+	    protected void onCreate(Bundle savedInstanceState) {
+	        super.onCreate(savedInstanceState);
+
+	        setContentView(R.layout.preference_list_content);
+	        
+	         mImage = (ImageView) this.findViewById(R.id.HeaderView);
+	         mImage.setBackgroundResource(R.drawable.image_loading_bg);
+	         
+	         this.addPreferencesFromResource(R.xml.settings_preferences);
+	         
+	         PreferenceScreen screen = this.getPreferenceScreen();
+	         mStandardUsers = (PreferenceScreen) screen.findPreference("standard_users");
+	         mProUsers = (ProPreference) screen.findPreference("pro_users");
+	         mAllUsers = (PreferenceScreen) screen.findPreference("all_users");
+
+	         Intent intent;
+	         {
+	        	 intent = new Intent();
+<<<<<<< HEAD
+	        	 intent.setClassName(getApplicationContext(),PACKAGES_ACTIVITIES + PAPERVIEWER);
+=======
+	        	 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.WallpaperViewer");
+>>>>>>> fragments
+	        	 mStandardUsers.setIntent(intent);
+	         }
+	         {
+	        	 if(mProUsers.isLicenseFound()){
+	        		 mProUsers.setEnabled(true);
+	        		 intent = new Intent();
+<<<<<<< HEAD
+	        		 intent.setClassName(getApplicationContext(), PACKAGES_ACTIVITIES + IMAGEBROWSER);
+=======
+	        		 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.BasicFileBrowser");
+>>>>>>> fragments
+	        		 mProUsers.setIntent(intent);
+	        	 }else{
+
+	        		 mProUsers.setEnabled(false);
+	        	 }
+	        	 
+	         }
+	         {
+	        	 intent = new Intent();
+<<<<<<< HEAD
+	        	 intent.setClassName(getApplicationContext(), PACKAGES_ACTIVITIES + SETTINGS);
+=======
+	        	 intent.setClassName(getApplicationContext(), "org.linuxmotion.livewallpaper.activities.settings.Settings");
+>>>>>>> fragments
+	        	 mAllUsers.setIntent(intent);
+	         }
+	         
+	     
+	       
+	    }
+
+}

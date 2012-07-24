@@ -1,6 +1,7 @@
 package org.linuxmotion.livewallpaper.database;
 
-import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +87,12 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 	// Adding new contact
 	public synchronized void addImage(String path) {
+<<<<<<< HEAD
 
+=======
+		Log.i(TAG, "Adding image with hash " + (new File(path)).hashCode());
+    	//mDatabase = this.getWritableDatabase();
+>>>>>>> fragments
 		 
 	    ContentValues values = new ContentValues();
 	    
@@ -104,6 +110,11 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    	mDatabase.insert(PATHS_TABLE, null, values);
 	   
 	    }
+<<<<<<< HEAD
+   		
+=======
+   		//mDatabase.close(); // Closing database connection
+>>>>>>> fragments
 	}
 	 
 	// Getting single contact
@@ -129,7 +140,11 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	        } while (mCursor.moveToNext());
 	    }
 	    mCursor.close();
+<<<<<<< HEAD
 
+=======
+	   // mDatabase.close();
+>>>>>>> fragments
 	    // return contact list
 	    return pathList;
 		}
@@ -142,7 +157,11 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		    mCursor = 	mDatabase.rawQuery(selectQuery, null);
 		    int count = mCursor.getCount();
 		    mCursor.close();
+<<<<<<< HEAD
 
+=======
+	    	//mDatabase.close();
+>>>>>>> fragments
 		    return count;
 		}
 	// Updating single contact
@@ -151,11 +170,17 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	 
 	// Deleting single contact
 	public synchronized void deleteImage(String path) {
+<<<<<<< HEAD
 
 		String hash = AeSimpleSHA1.SHA1(path);		
 		LogWrapper.Logi(TAG, "Deleting image with name " + path + " and hash " + hash);	
     	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{hash});
   
+=======
+    	mDatabase = this.getWritableDatabase();
+    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{String.valueOf(new File(path).hashCode())});
+    	//mDatabase.close();
+>>>>>>> fragments
 	}
 	
 
@@ -171,7 +196,11 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    	mCursor.moveToFirst();
 	    	//Log.i(TAG, "Entry is present for " + mCursor.getInt(0));
 	    	mCursor.close();
+<<<<<<< HEAD
 
+=======
+	    	//mDatabase.close();
+>>>>>>> fragments
 	    	return true; // A key entry was found
 	    	
 	    }
@@ -180,9 +209,11 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	
 
 	public boolean isOpen(){
-
+<<<<<<< HEAD
 		return (mDatabase != null ? mDatabase.isOpen() : false);
-
+=======
+		return mDatabase.isOpen();
+>>>>>>> fragments
 	}
     
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+     
+          <LinearLayout android:id="@+id/progressContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent" 
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:gravity="center">
+        
+	        <ProgressBar style="?android:attr/progressBarStyleLarge"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+	        <TextView android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:textAppearance="?android:attr/textAppearanceSmall"
+	                android:text="loading"
+	                android:paddingTop="4dip"
+	                android:singleLine="true" />
+            
+    	</LinearLayout>
+    	
+     <LinearLayout
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:orientation="vertical"
+         android:paddingTop="5dp">
+         
+          <ImageView 
+                android:id="@+id/HeaderView"
+                android:contentDescription="@string/headerViewString"
+                android:layout_width="200dp" 
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+              />       
+              
+          <TextView 
+                android:id="@+id/HeaderText"
+                android:contentDescription="@string/headerViewString"
+                android:layout_width="match_parent" 
+                android:layout_height="wrap_content"
+                android:text="Open Live Wallpaper"
+              />
+ 
+          
+     </LinearLayout>
+  
+        
+    <FrameLayout android:id="@+id/listContainer"
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content">
+            
+        <ListView android:id="@android:id/list"
+                android:layout_width="match_parent" 
+                android:layout_height="match_parent"
+                android:drawSelectorOnTop="false" />
+        <TextView android:id="@+id/internalEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+    </FrameLayout>
+    
+ </LinearLayout>

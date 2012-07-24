@@ -13,9 +13,7 @@
         android:enabled="false" />
     <PreferenceScreen
         android:key="all_users"
-        android:title="General settings" >
-   
-    </PreferenceScreen>
+        android:title="General settings" />
    
 
 </PreferenceScreen>

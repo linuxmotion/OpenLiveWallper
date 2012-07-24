@@ -16,6 +16,15 @@ public class DataBaseHelper  {
 		
 	}
 	
+<<<<<<< HEAD
+
+=======
+	public void open(){
+		mDatabase.open();
+		
+	}
+	
+>>>>>>> fragments
 	public void updatePhotoList(File[] photos){}
 
 	public void updatePhotoList(String[] photos){}
@@ -70,19 +79,21 @@ public class DataBaseHelper  {
 	}
 
 	public void open(){
-		if(mDatabase != null || !mDatabase.isOpen())
-			mDatabase.open();	
-		
+		if(!mDatabase.isOpen())mDatabase.open();	
 	}	
 	
 	public void close(){
 		
-		if(mDatabase != null || mDatabase.isOpen())
-				mDatabase.close();		
+		if(mDatabase.isOpen())mDatabase.close();		
 	}
 
 	
-	
+	public void close(){
+		
+		mDatabase.close();
+		
+		
+	}
 	
 	public boolean isOpen(){
 		return mDatabase.isOpen();
