@@ -35,22 +35,11 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".activities.WallpaperViewer">
+        <activity android:name=".activities.SingleFragmentActivity">
         </activity>
         
-        <activity android:name=".activities.BasicFileBrowser">
-        </activity>
         
-        <activity
-            android:label="openLiveWallpaper"
-            android:name="org.linuxmotion.filemanager.openFileManagerActivity">
-         </activity>
-         
-        
-        <activity android:label="Settings" android:name=".activities.settings.Settings"></activity>
-        
-        
-        <activity android:name=".activities.DetailedImageViewer"
+        <activity android:name=".activities.DetailedImageViewerActivity"
              android:launchMode="singleTop"
               android:screenOrientation="portrait" 
               android:excludeFromRecents="true">

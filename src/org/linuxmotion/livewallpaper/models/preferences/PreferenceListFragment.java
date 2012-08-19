@@ -1,4 +1,5 @@
-package org.linuxmotion.livewallpaper.activities.fragments;
+package org.linuxmotion.livewallpaper.models.preferences;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -73,7 +74,7 @@ public class PreferenceListFragment extends ListFragment{
         if(b != null)
             xmlId = b.getInt("xml");
         mPreferenceManager = onCreatePreferenceManager();
-        lv = (ListView) LayoutInflater.from(getActivity()).inflate(R.layout.preference_list_content, null);
+        lv = (ListView)LayoutInflater.from(getActivity()).inflate(R.layout.layout_list, null);
         lv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         addPreferencesFromResource(xmlId);
         postBindPreferences();

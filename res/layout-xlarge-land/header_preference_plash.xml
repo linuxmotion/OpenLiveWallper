@@ -22,15 +22,16 @@
 	                android:singleLine="true" />
             
     	</LinearLayout>
-    	     
-  		<TextView 
+    	
+   <TextView 
                 android:id="@+id/HeaderText"
-                android:gravity="center_horizontal"
                 android:contentDescription="@string/headerViewString"
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"
                 android:text="@string/welcome_header_string"
+                android:gravity="center_horizontal"
               />
+  
         
     <FrameLayout android:id="@+id/listContainer"
             android:layout_width="match_parent" 

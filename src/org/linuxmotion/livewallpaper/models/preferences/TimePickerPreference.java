@@ -26,7 +26,7 @@ public class TimePickerPreference extends Preference {
 	}
 	public TimePickerPreference(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		this.setWidgetLayoutResource(R.layout.time_picked_text);
+		this.setWidgetLayoutResource(R.layout.layout_time_picked_text);
 
 	}
 

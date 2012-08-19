@@ -17,37 +17,20 @@
 	        <TextView android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:textAppearance="?android:attr/textAppearanceSmall"
-	                android:text="loading"
+	                android:text="@string/loading_string"
 	                android:paddingTop="4dip"
 	                android:singleLine="true" />
             
     	</LinearLayout>
     	
-     <LinearLayout
-         android:layout_width="wrap_content"
-         android:layout_height="match_parent"
-         android:orientation="vertical"
-         android:paddingTop="5dp">
-         
-          <ImageView 
-                android:id="@+id/HeaderView"
-                android:contentDescription="@string/headerViewString"
-                android:layout_width="200dp" 
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-              />       
-              
-          <TextView 
+      <TextView 
                 android:id="@+id/HeaderText"
+                android:gravity="center_horizontal"
                 android:contentDescription="@string/headerViewString"
-                android:layout_width="match_parent" 
+                android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"
-                android:text="Open Live Wallpaper"
+                android:text="@string/welcome_header_string"
               />
- 
-          
-     </LinearLayout>
-  
         
     <FrameLayout android:id="@+id/listContainer"
             android:layout_width="match_parent" 

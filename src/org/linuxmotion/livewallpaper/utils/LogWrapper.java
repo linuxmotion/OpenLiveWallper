@@ -1,5 +1,6 @@
 package org.linuxmotion.livewallpaper.utils;
 
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 public class LogWrapper {
@@ -8,6 +9,11 @@ public class LogWrapper {
 	public static void Logd(String tag, String msg){
 		
 		if(Constants.DEBUG)Log.d(tag, msg);
+	}
+	
+	public static void Logdb(String tag, String msg){
+		
+		if(Constants.DEBUG_DATABASE)Log.d(tag, msg);
 	}
 
 	public static void Logv(String tag, String msg){
@@ -29,5 +35,12 @@ public class LogWrapper {
 	
 	if(Constants.WARNINGS)Log.w(tag, msg);
 	
+	}
+
+	public static void Logi(Fragment fragment,String msg) {
+
+		
+		if(Constants.INFORMATIONAL)Log.v(fragment.getClass().getSimpleName(), msg);
+		
 	}
 }

@@ -1,17 +1,31 @@
 package org.linuxmotion.livewallpaper.utils.images;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class BitmapHelper {
 	
 	
+	public static Bitmap decodeSampledBitmapFromResource(Resources resc, int reqWidth, int reqHeight, int id) throws OutOfMemoryError {
+
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    options.inJustDecodeBounds = true;
+
+	    // Calculate inSampleSize
+	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    return BitmapFactory.decodeResource(resc, id, options);
+	}
+	
 	public static Bitmap decodeSampledBitmapFromImage(String path, int reqWidth, int reqHeight) throws OutOfMemoryError {
 
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
 	    options.inJustDecodeBounds = true;
-	    BitmapFactory.decodeFile(path, options);
 
 	    // Calculate inSampleSize
 	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);

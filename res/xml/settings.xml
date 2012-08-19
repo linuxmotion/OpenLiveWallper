@@ -8,7 +8,7 @@
             android:title="Time between switches" 
             android:key="time_between_switches" 
             android:shouldDisableView="false" 
-            android:widgetLayout="@layout/time_picked_text"
+            android:widgetLayout="@layout/layout_time_picked_text"
             android:enabled="true"
             android:onClick="showTimePickerDialog"/>
 	     <ListPreference

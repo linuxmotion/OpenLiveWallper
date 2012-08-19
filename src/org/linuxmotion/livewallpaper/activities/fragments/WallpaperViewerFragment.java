@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.utils.Constants;
+import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -62,7 +63,7 @@ public class WallpaperViewerFragment extends Fragment implements AdapterView.OnI
       //  requestWindowFeature(Window.FEATURE_NO_TITLE);
 
       //  
-        
+        LogWrapper.Logi(this, "Starting wallpaper fragement");
         findWallpapers();
 
        // setContentView(R.layout.wallpaper_chooser);
@@ -83,7 +84,7 @@ public class WallpaperViewerFragment extends Fragment implements AdapterView.OnI
                              Bundle savedInstanceState) {
     	
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.wallpaper_chooser, container, false);
+        View v = inflater.inflate(R.layout.layout_wallpaper_chooser, container, false);
      	mGallery = (Gallery) v.findViewById(R.id.gallery);
         mGallery.setAdapter(new ImageAdapter(this));
         mGallery.setOnItemSelectedListener(this);
@@ -192,7 +193,7 @@ public class WallpaperViewerFragment extends Fragment implements AdapterView.OnI
             ImageView image;
 
             if (convertView == null) {
-                image = (ImageView) mLayoutInflater.inflate(R.layout.wallpaper_item, parent, false);
+                image = (ImageView) mLayoutInflater.inflate(R.layout.layout_wallpaper_item, parent, false);
             } else {
                 image = (ImageView) convertView;
             }

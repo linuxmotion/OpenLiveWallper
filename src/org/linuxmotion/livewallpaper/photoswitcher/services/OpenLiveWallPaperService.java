@@ -1,14 +1,17 @@
 package org.linuxmotion.livewallpaper.photoswitcher.services;
 
-import java.io.FileNotFoundException;
-
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.utils.Constants;
 import org.linuxmotion.livewallpaper.utils.LicenseChecker;
 import org.linuxmotion.livewallpaper.utils.LogWrapper;
 import org.linuxmotion.livewallpaper.utils.images.BitmapHelper;
+import org.linuxmotion.receivers.AddPhotoReciever;
+import org.linuxmotion.receivers.AddPhotoReciever.PhotoReceiver;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentFilter.MalformedMimeTypeException;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -22,11 +25,10 @@ import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
-public class OpenLiveWallPaperService extends WallpaperService {
+public class OpenLiveWallPaperService extends WallpaperService implements PhotoReceiver {
 
 	private static final String TAG = OpenLiveWallPaperService.class.getSimpleName();
 
@@ -35,6 +37,8 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	private Resources mResources;
 	private Bitmap mBackground;
 	public float mScalingFactor;
+	
+	private AddPhotoReciever mReciever = null;
 
 	private int mSwitchType = Constants.PLAIN_SWITCH;
 	public int mDrawType = Constants.PLAIN_DRAW;
@@ -45,10 +49,13 @@ public class OpenLiveWallPaperService extends WallpaperService {
 	private DataBaseHelper mDBHelper= new DataBaseHelper();
 	String [] mEntries;
 	private int mEntryPointer = 0;
+
+	private boolean mRestartOnRefresh = false;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
 		mSharedPrefs = getSharedPreferences(Constants.SHARED_PREFS, 0);
 		mResources = getResources();
 		mDefaultSelection = mSharedPrefs.getInt(Constants.DEFAULT_IMAGE_SELECTION, 0);
@@ -60,6 +67,12 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		mDBHelper.initDatabase(this);
 		mDBHelper.open();
 		mEntries = mDBHelper.getAllEntries();
+
+		mReciever = new AddPhotoReciever();
+		mReciever.setReceiver(this);
+		IntentFilter filter = new IntentFilter();
+		// Set the intent to filter
+		registerReceiver(mReciever,filter);
 	}
 
 
@@ -86,7 +99,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 		private float mCenterX;
 		private float mCenterY;
 	    private long  mStartTime;
-	    private long  mRunTime = 10000;
+	    private long  mRunTime = 1000;
 	    private boolean mVisible;
 	    private static final float mMaxScale = 5;
 	    private static final float mMinScale = 0.25f;
@@ -120,7 +133,7 @@ public class OpenLiveWallPaperService extends WallpaperService {
 
             // By default we don't get touch events, so enable them.
             // We dont want this just yet
-            //setTouchEventsEnabled(true);
+            //setTouchEventsEnabled(true);\
         }
 
         private final Runnable mTimeToSwitch = new Runnable() {
@@ -380,29 +393,27 @@ public class OpenLiveWallPaperService extends WallpaperService {
 			private Bitmap retreiveBitmap(BitmapFactory.Options options){
 				
 				if(mBackground == null || mNewBackground){
-					String filePath = mSharedPrefs.getString(Constants.SINGLE_FILE_PATH, "");
 					Log.d(this.getClass().getSimpleName(), "Getting a new picture");
-					Bitmap b = null;
 					mNewBackground = false;
 					
 					// If the default selection is at the max length return it to the first picture
-					if(mDefaultSelection == (Constants.DefaultPictures.length)){ mDefaultSelection = 0;}
+					
 					
 					if(mLicensePresent){
 						
 							// Decode picture from the database entry i
-								
-							if(b == null){
-								// If the bitmap cannot be decoded resort to a default bitmap and increment the number
-								return BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
-							}
-				        	return b; // Return the decoded bitmap
+							if(mEntryPointer == mEntries.length)
+								mEntryPointer = 0;
+							// If the bitmap cannot be decoded resort to a default bitmap and increment the number
+							return BitmapHelper.decodeSampledBitmapFromImage(mEntries[mEntryPointer++], this.getDesiredMinimumWidth(), this.getDesiredMinimumHeight());
+
 				        	
 				        }
 				        else{// If the license cannot be found resort to a default bitmap and increment the number
-				        	
-				        	b = BitmapFactory.decodeResource(mResources, Constants.DefaultPictures[mDefaultSelection++], options);
-				        	return b;
+				        	if(mDefaultSelection == (Constants.DefaultPictures.length))
+				        		mDefaultSelection = 0;
+				        	return BitmapHelper.decodeSampledBitmapFromResource(mResources, this.getDesiredMinimumWidth(), this.getDesiredMinimumHeight(), Constants.DefaultPictures[mDefaultSelection++]);
+							
 				        }
 					}
 				else{ // There is already a bitmap ready. Don't waste resources creating it again
@@ -418,6 +429,18 @@ public class OpenLiveWallPaperService extends WallpaperService {
 				if(DBG)Log.d(TAG, msg);
 				
 			}
+	}
+
+
+
+	@Override
+	public void onPhotoRecived() {
+		if(mEntryPointer == mEntries.length || mRestartOnRefresh)
+			mEntryPointer = 0;
+		// Refresh the database
+		mEntries = mDBHelper.getAllEntries();
+		LogWrapper.Logi(TAG,"Pictures refreshed");
+		
 	}
 	
 	

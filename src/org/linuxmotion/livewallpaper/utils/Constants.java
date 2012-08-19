@@ -16,13 +16,17 @@ public class Constants {
 	 */
 	public static final boolean DEBUG = false;
 	/**
+	 * Turn on/off LogWrappers debug log statements
+	 */
+	public static final boolean DEBUG_DATABASE = false;
+	/**
 	 * Turn on/off LogWrappers Error log statements
 	 */
 	public static final boolean ERRORS = true;
 	/**
 	 * Turn on/off LogWrappers verbose log statements
 	 */
-	public static final boolean VERBOSE = true;
+	public static final boolean VERBOSE = false;
 	
 	/**
 	 * Turn on/off LogWrappers warning log statements
@@ -35,7 +39,10 @@ public class Constants {
 
 	public static final String DEFAULT_IMAGE_SELECTION = "DEFAULT_IMAGE_SELECTION";
 
-	
+
+	public static final int WALLPAPER_VEIWER = 0;
+	public static final int CUSTOM_PAPERS =  WALLPAPER_VEIWER + 1;
+	public static final int SETTINGS = CUSTOM_PAPERS + 1;
 
 	
 /*Draw constants, Also maped to the switch types
@@ -106,6 +113,8 @@ public class Constants {
 	 * Picture is switched with a slide affect
 	 */
 	public static final int FLIP_SWITCH = FLIP_DRAW;
+
+	public static final String DETAILED_IMAGE_VIEWER = "detailViwer";
 
 
 	

@@ -1,33 +1,33 @@
-package org.linuxmotion.livewallpaper.activities;
+package org.linuxmotion.livewallpaper.activities.fragments;
 
 import java.io.File;
 
 import org.linuxmotion.concurrent.CheckBoxLoader;
 import org.linuxmotion.concurrent.ImageLoader;
-import org.linuxmotion.io.DiskLruImageCache;
 import org.linuxmotion.livewallpaper.R;
 import org.linuxmotion.livewallpaper.database.DataBaseHelper;
 import org.linuxmotion.livewallpaper.models.AsyncCheckBox;
 import org.linuxmotion.livewallpaper.models.listeners.CheckBoxClickListener;
 import org.linuxmotion.livewallpaper.models.listeners.ImageClickListener;
-import org.linuxmotion.livewallpaper.utils.LogWrapper;
 
 import android.app.ActivityManager;
-import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceActivity;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollListener {
+public class BasicFileBrowserFragment extends ListFragment {
+
 	
-	private static final String TAG = BasicFileBrowser.class.getSimpleName();
+	private static final String TAG = BasicFileBrowserFragment.class.getSimpleName();
 
 	//private int mFlingState = 0;
 
@@ -40,33 +40,57 @@ public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollL
 	  public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         
-        mMemClass = ((ActivityManager) this.getApplicationContext().getSystemService(
+        mMemClass = ((ActivityManager) this.getActivity().getApplicationContext().getSystemService(
                 Context.ACTIVITY_SERVICE)).getMemoryClass();
        
-        mDBHelper.initDatabase(this); // Prepare the helper
+        mDBHelper.initDatabase(this.getActivity()); // Prepare the helper
         mDBHelper.open();
         
-        mImageLoader = new ImageLoader(this);
+        mImageLoader = new ImageLoader(this.getActivity());
             
 
-        
-        //initCheckBoxCache(mMemClass);
-
+     
         mCheckBoxHelper = new CheckBoxLoader(mDBHelper,false, mMemClass);
-        
+        /*
      
         File[] List = getPhotoList();
         if(List == null)
         	List = new File[0];
         
-        ArrayAdapter adapter = new SimpleFileAdapter(this, List);
+        ArrayAdapter adapter = new SimpleFileAdapter(this.getActivity(), List);
 
         setListAdapter(adapter); 
         //this.getListView().setOnScrollListener(this);
-        
+        */
 
 	}
+	  @Override
+	    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                             Bundle savedInstanceState) {
+		  
+		  // Inflate just a listview and dont attach to the heirachy
+		  FrameLayout list = (FrameLayout) inflater.inflate(R.layout.layout_list_content, container, false);
+
+	        File[] List = getPhotoList();
+	        if(List == null)
+	        	List = new File[0];
+	        
+	        ArrayAdapter adapter = new SimpleFileAdapter(this.getActivity(), List);
+		  
+	       // find and cast to list view and set the adpater
+		  ((ListView)list.findViewById(android.R.id.list)).setAdapter(adapter);
+		  
+		  return list;
+		  
+		  
+	  }
 	
+    @Override
+    public void onActivityCreated (Bundle savedInstanceState){
+    	super.onActivityCreated(savedInstanceState);
+   
+    }
+    
 	@Override
 	public void onStart(){
 		super.onStart();
@@ -107,7 +131,7 @@ public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollL
 		private final File[] mPhotos;
 		
 		public SimpleFileAdapter(Context context, File[] photos) {
-			super(context, R.layout.rowlayout, android.R.layout.simple_list_item_1, photos);
+			super(context, R.layout.layout_row_list_checkbox, android.R.layout.simple_list_item_1, photos);
 			
 			mContext = context;
 			mPhotos  = photos;
@@ -129,7 +153,7 @@ public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollL
 			
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rowView = inflater.inflate(R.layout.rowlayout, parent, false);
+			rowView = inflater.inflate(R.layout.layout_row_list_checkbox, parent, false);
 
 			}
 			// Find the views for modification
@@ -211,6 +235,5 @@ public class BasicFileBrowser extends PreferenceActivity {//implements OnScrollL
         
 	}
 	*/
-	
 
 }

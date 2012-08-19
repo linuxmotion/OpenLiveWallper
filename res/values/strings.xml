@@ -29,5 +29,8 @@
         <item >3</item>
         <item >2</item>
     </string-array>
+    <string name="Quit">Quit</string>
+    <string name="loading_string">Loading</string>
+    <string name="welcome_header_string">Welcome to OpenLiveWallpaper</string>
     
 </resources>

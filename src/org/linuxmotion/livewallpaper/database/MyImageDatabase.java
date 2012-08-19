@@ -1,6 +1,5 @@
 package org.linuxmotion.livewallpaper.database;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +10,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.util.Log;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyImageDatabase extends SQLiteOpenHelper {
 
@@ -34,10 +32,6 @@ public class MyImageDatabase extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     // Path Table Columns names
     private static final String PATH_ID = "path";
-    
-    //private static final String KEY_COL_ID = "id";
-    // Path Table Columns names
-    //private static final String PATH_COL_ID = "path";
 
 	private static final String TAG = "MyImageDatabase";
     
@@ -66,7 +60,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Log.i(TAG, "Creating database");
+		LogWrapper.Logdb(TAG, "Creating database");
 		// TODO Auto-generated method stub
 		 String CREATE_IMAGE_PATH_TABLE = "CREATE TABLE " + PATHS_TABLE + "("
          + KEY_ID + " INTERGER PRIMARY KEY," + PATH_ID + " TEXT )";
@@ -84,8 +78,15 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		
 	}
 	
-	// Adding new contact
-	public synchronized void addImage(String path) {
+	
+	public static final int INSERT_ERROR = -1;
+	public static final int PATH_ERROR = -2;
+	/**
+	 * 
+	 * @param path The path to the image to add
+	 * @return The row ID of the newly inserted row, -1 if an error occurred while inserting,<br> or -2 if the path was not present 
+	 */
+	public synchronized long addImage(String path) {
 
 		 
 	    ContentValues values = new ContentValues();
@@ -95,15 +96,16 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	   if(!isImagePathPresent(path)){ // No need to insert into db if present
 		   
 		   String hash = AeSimpleSHA1.SHA1(path);
-		   LogWrapper.Logi(TAG, "Adding image with the path: " + path + " and hash: " + hash);
+		   LogWrapper.Logdb(TAG, "Adding image with the path: " + path + " and hash: " + hash);
 	
 		    values.put(KEY_ID, hash); //  String hash
 		    values.put(PATH_ID, path); // String path
 		 
 		    // Inserting Row
-	    	mDatabase.insert(PATHS_TABLE, null, values);
+	    	return mDatabase.insert(PATHS_TABLE, null, values);
 	   
 	    }
+	   return PATH_ERROR;
 	}
 	 
 	// Getting single contact
@@ -150,11 +152,21 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 		return 0;}
 	 
 	// Deleting single contact
-	public synchronized void deleteImage(String path) {
+	/**
+	 * 
+	 * @param path
+	 * @return The error code if no image path is present, the number of rows affected if a whereClause is passed in, or 0 otherwise.
+	 */
+	public synchronized int deleteImage(String path) {
 
-		String hash = AeSimpleSHA1.SHA1(path);		
-		LogWrapper.Logi(TAG, "Deleting image with name " + path + " and hash " + hash);	
-    	mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{hash});
+		if(isImagePathPresent(path)){
+			String hash = AeSimpleSHA1.SHA1(path);		
+			LogWrapper.Logdb(TAG, "Deleting image with name " + path + " and hash " + hash);	
+    		return mDatabase.delete(PATHS_TABLE, KEY_ID + " = ?", new String[]{hash});
+		}
+		
+		return PATH_ERROR;
+    	
   
 	}
 	
@@ -169,7 +181,7 @@ public class MyImageDatabase extends SQLiteOpenHelper {
 	    mCursor = 	mDatabase.rawQuery(selectQuery, null);
 	    if(mCursor.getCount() > 0){
 	    	mCursor.moveToFirst();
-	    	//Log.i(TAG, "Entry is present for " + mCursor.getInt(0));
+	    	LogWrapper.Logdb(TAG, "Entry is present for " + mCursor.getInt(0));
 	    	mCursor.close();
 
 	    	return true; // A key entry was found

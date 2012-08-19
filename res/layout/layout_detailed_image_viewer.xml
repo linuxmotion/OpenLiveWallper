@@ -20,26 +20,17 @@
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal" >	
         <Button
-            android:id="@+id/CancelButton"
+            android:id="@+id/QuitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
-            android:text="@string/Cancel" />
-        <Button
-            android:id="@+id/setImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="5dp"
-            android:text="@string/Set"   />
+            android:text="@string/Quit" />
 
         <Button
-            android:id="@+id/RemoveButton"
+            android:id="@+id/SetRemoveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"

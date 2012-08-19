@@ -26,7 +26,7 @@ public class ProPreference extends Preference {
 	public ProPreference(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-		this.setWidgetLayoutResource(R.layout.pro_view_widget);
+		this.setWidgetLayoutResource(R.layout.layout_pro_view_widget);
 	}
 
 
@@ -49,7 +49,7 @@ public class ProPreference extends Preference {
 		
 		if(proView != null && proView instanceof ImageView){
 		
-			LogWrapper.Logv("ProPreference", "ImageView found");
+			LogWrapper.Logi("ProPreference", "ImageView found");
 			
 			view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), 0, view.getPaddingBottom());
 			proView.setBackgroundResource(R.drawable.ic_unpurchased);

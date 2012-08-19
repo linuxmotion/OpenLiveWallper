@@ -4,12 +4,11 @@ import org.linuxmotion.livewallpaper.R;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
